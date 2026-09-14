@@ -161,19 +161,19 @@ class SettingsScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 16),
           const _Section('About'),
-          GlassCard(
+          const GlassCard(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
+                Text(
                   AppConstants.appName,
                   style: TextStyle(fontWeight: FontWeight.w700),
                 ),
-                const Text(AppConstants.tagline),
-                const SizedBox(height: 8),
-                Text('Version 1.0.0  ·  ${AppConstants.credit}'),
-                const SizedBox(height: 8),
-                const Text(
+                Text(AppConstants.tagline),
+                SizedBox(height: 8),
+                const Text('Version 1.0.0  ·  ${AppConstants.credit}'),
+                SizedBox(height: 8),
+                Text(
                   'Blynk template: Ecosense (TMPL6lSiWFFsO). Pins V0–V5.',
                 ),
               ],

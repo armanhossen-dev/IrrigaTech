@@ -38,7 +38,7 @@ class MotorCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 backgroundColor: isOn
-                    ? AppColors.success.withOpacity(0.18)
+                    ? AppColors.success.withValues(alpha: 0.18)
                     : scheme.surfaceContainerHighest,
                 child: Icon(
                   Icons.power_settings_new,
@@ -69,7 +69,7 @@ class MotorCard extends StatelessWidget {
               width: double.infinity,
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: AppColors.warning.withOpacity(0.12),
+                color: AppColors.warning.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(

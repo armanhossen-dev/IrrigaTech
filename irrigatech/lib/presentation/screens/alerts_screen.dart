@@ -80,9 +80,9 @@ class _AlertsScreenState extends ConsumerState<AlertsScreen> {
                           padding: const EdgeInsets.only(bottom: 10),
                           child: GlassCard(
                             tint: a.isSecurity
-                                ? AppColors.danger.withOpacity(0.14)
+                                ? AppColors.danger.withValues(alpha: 0.14)
                                 : a.severity == AlertSeverity.success
-                                    ? AppColors.success.withOpacity(0.08)
+                                    ? AppColors.success.withValues(alpha: 0.08)
                                     : null,
                             child: Row(
                               crossAxisAlignment: CrossAxisAlignment.start,

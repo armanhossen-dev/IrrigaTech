@@ -62,10 +62,10 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
                 height: 112,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white.withOpacity(0.15),
+                  color: Colors.white.withValues(alpha: 0.15),
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.black.withOpacity(0.18),
+                      color: Colors.black.withValues(alpha: 0.18),
                       blurRadius: 24,
                     ),
                   ],
@@ -87,7 +87,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
               Text(
                 AppConstants.tagline,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                      color: Colors.white.withOpacity(0.9),
+                      color: Colors.white.withValues(alpha: 0.9),
                     ),
               ).animate().fadeIn(delay: 500.ms),
             ],

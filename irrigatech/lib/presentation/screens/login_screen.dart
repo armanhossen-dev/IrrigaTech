@@ -29,7 +29,7 @@ class LoginScreen extends ConsumerWidget {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: [
-              AppColors.mist.withOpacity(0.9),
+              AppColors.mist.withValues(alpha: 0.9),
               Theme.of(context).scaffoldBackgroundColor,
             ],
             begin: Alignment.topCenter,
@@ -54,7 +54,7 @@ class LoginScreen extends ConsumerWidget {
                       .headlineMedium
                       ?.copyWith(fontWeight: FontWeight.w700),
                 ),
-                Text(AppConstants.tagline),
+                const Text(AppConstants.tagline),
                 const SizedBox(height: 28),
                 GlassCard(
                   child: Column(

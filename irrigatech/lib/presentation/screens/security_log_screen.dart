@@ -23,7 +23,7 @@ class SecurityLogScreen extends ConsumerWidget {
         padding: const EdgeInsets.all(16),
         children: [
           GlassCard(
-            tint: attempts >= 3 ? AppColors.danger.withOpacity(0.12) : null,
+            tint: attempts >= 3 ? AppColors.danger.withValues(alpha: 0.12) : null,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -57,7 +57,7 @@ class SecurityLogScreen extends ConsumerWidget {
             (a) => Padding(
               padding: const EdgeInsets.only(bottom: 8),
               child: GlassCard(
-                tint: AppColors.danger.withOpacity(0.12),
+                tint: AppColors.danger.withValues(alpha: 0.12),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
                   leading: const Text('🚨', style: TextStyle(fontSize: 24)),

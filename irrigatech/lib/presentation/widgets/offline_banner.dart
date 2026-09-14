@@ -14,7 +14,7 @@ class OfflineBanner extends ConsumerWidget {
       return const SizedBox.shrink();
     }
     return Material(
-      color: AppColors.warning.withOpacity(0.92),
+      color: AppColors.warning.withValues(alpha: 0.92),
       child: SafeArea(
         bottom: false,
         child: Padding(

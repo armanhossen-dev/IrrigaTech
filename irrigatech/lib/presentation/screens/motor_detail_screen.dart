@@ -65,7 +65,7 @@ class MotorDetailScreen extends ConsumerWidget {
           ),
           const SizedBox(height: 12),
           GlassCard(
-            tint: AppColors.warning.withOpacity(0.08),
+            tint: AppColors.warning.withValues(alpha: 0.08),
             child: Text(reason),
           ),
           const SizedBox(height: 16),

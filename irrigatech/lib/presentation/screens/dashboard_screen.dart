@@ -69,8 +69,8 @@ class DashboardScreen extends ConsumerWidget {
                   CircleAvatar(
                     radius: 28,
                     backgroundColor: s.raining
-                        ? AppColors.rain.withOpacity(0.2)
-                        : AppColors.warning.withOpacity(0.15),
+                        ? AppColors.rain.withValues(alpha: 0.2)
+                        : AppColors.warning.withValues(alpha: 0.15),
                     child: WeatherLottie(raining: s.raining),
                   ),
                   const SizedBox(width: 14),
@@ -98,7 +98,7 @@ class DashboardScreen extends ConsumerWidget {
               children: [
                 Expanded(
                   child: GlassCard(
-                    tint: s.raining ? AppColors.rain.withOpacity(0.12) : null,
+                    tint: s.raining ? AppColors.rain.withValues(alpha: 0.12) : null,
                     child: Row(
                       children: [
                         Icon(
@@ -120,8 +120,8 @@ class DashboardScreen extends ConsumerWidget {
                 Expanded(
                   child: GlassCard(
                     tint: s.tankFull
-                        ? AppColors.tankFull.withOpacity(0.12)
-                        : AppColors.teal.withOpacity(0.08),
+                        ? AppColors.tankFull.withValues(alpha: 0.12)
+                        : AppColors.teal.withValues(alpha: 0.08),
                     child: Row(
                       children: [
                         Icon(
@@ -238,7 +238,7 @@ class DashboardScreen extends ConsumerWidget {
                     padding: const EdgeInsets.only(bottom: 8),
                     child: GlassCard(
                       tint: a.isSecurity
-                          ? AppColors.danger.withOpacity(0.12)
+                          ? AppColors.danger.withValues(alpha: 0.12)
                           : null,
                       onTap: () => context.go('/alerts'),
                       child: Row(
@@ -304,7 +304,7 @@ class _ConnectionPill extends StatelessWidget {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
         decoration: BoxDecoration(
-          color: color.withOpacity(0.14),
+          color: color.withValues(alpha: 0.14),
           borderRadius: BorderRadius.circular(99),
         ),
         child: Row(

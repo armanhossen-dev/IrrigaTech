@@ -26,7 +26,7 @@ class SensorTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return GlassCard(
       padding: const EdgeInsets.all(14),
-      tint: error ? AppColors.danger.withOpacity(0.12) : null,
+      tint: error ? AppColors.danger.withValues(alpha: 0.12) : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

@@ -20,7 +20,7 @@ class StatusReportSheet extends StatelessWidget {
             width: 40,
             height: 4,
             decoration: BoxDecoration(
-              color: Colors.grey.withOpacity(0.4),
+              color: Colors.grey.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(99),
             ),
           ),
@@ -31,7 +31,7 @@ class StatusReportSheet extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           GlassCard(
-            tint: AppColors.mist.withOpacity(0.35),
+            tint: AppColors.mist.withValues(alpha: 0.35),
             child: SelectableText(
               report,
               style: const TextStyle(height: 1.55, fontSize: 14),

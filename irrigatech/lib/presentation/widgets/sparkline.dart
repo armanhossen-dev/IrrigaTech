@@ -38,7 +38,7 @@ class Sparkline extends StatelessWidget {
               dotData: const FlDotData(show: false),
               belowBarData: BarAreaData(
                 show: true,
-                color: color.withOpacity(0.18),
+                color: color.withValues(alpha: 0.18),
               ),
             ),
           ],

@@ -169,7 +169,7 @@ class _ChartCard extends StatelessWidget {
                         show: true,
                         drawVerticalLine: false,
                         getDrawingHorizontalLine: (v) => FlLine(
-                          color: Theme.of(context).dividerColor.withOpacity(0.4),
+                          color: Theme.of(context).dividerColor.withValues(alpha: 0.4),
                           strokeWidth: 1,
                         ),
                       ),
@@ -194,7 +194,7 @@ class _ChartCard extends StatelessWidget {
                           ],
                           belowBarData: BarAreaData(
                             show: true,
-                            color: color.withOpacity(0.12),
+                            color: color.withValues(alpha: 0.12),
                           ),
                         ),
                       ],

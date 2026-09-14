@@ -74,7 +74,7 @@ class AppTheme {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        indicatorColor: scheme.primary.withOpacity(0.18),
+        indicatorColor: scheme.primary.withValues(alpha: 0.18),
         labelTextStyle: WidgetStatePropertyAll(
           textTheme.labelSmall?.copyWith(fontWeight: FontWeight.w600),
         ),
