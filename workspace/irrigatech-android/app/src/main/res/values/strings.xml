@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">IrrigaTech</string>
+    <string name="tagline">Save Water | Save Life</string>
+
+    <!-- Replace with the Web client ID from Firebase Console > Authentication >
+         Google > Web SDK configuration. The google-services plugin also emits a
+         matching value as default_web_client_id; this placeholder keeps the
+         project building before Firebase is configured. -->
+    <string name="google_web_client_id" translatable="false">REPLACE_WITH_FIREBASE_WEB_CLIENT_ID</string>
+
+    <string name="cd_logo">IrrigaTech logo</string>
+    <string name="cd_temperature">Temperature sensor</string>
+    <string name="cd_moisture">Soil moisture sensor</string>
+    <string name="cd_battery">Battery level</string>
+    <string name="cd_voltage">Supply voltage</string>
+    <string name="cd_rain">Rain status</string>
+    <string name="cd_tank">Tank status</string>
+    <string name="cd_motor_running">Motor running</string>
+    <string name="cd_motor_stopped">Motor stopped</string>
+    <string name="cd_alert_security">Security alert</string>
+    <string name="cd_back">Back</string>
+    <string name="cd_show_token">Show token</string>
+    <string name="cd_hide_token">Hide token</string>
+    <string name="cd_refresh">Refresh</string>
+
+    <string name="notif_channel_alerts">Irrigation alerts</string>
+    <string name="notif_channel_alerts_desc">Motor, rain, tank, battery and security alerts</string>
+</resources>

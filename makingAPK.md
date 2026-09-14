@@ -1,3 +1,5 @@
+for flutter:
+
 ```bash
 flutter clean
 
@@ -13,4 +15,7 @@ flutter config --jdk-dir="$(/usr/libexec/java_home -v17)"
 brew reinstall openjdk@17
 
 /usr/libexec/java_home -v17
+
 ```
+
+for android studio
