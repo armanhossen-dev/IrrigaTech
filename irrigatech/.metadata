@@ -1,0 +1,23 @@
+# This file tracks properties of this Flutter project.
+# Used by Flutter tool to assess capabilities and perform upgrades.
+
+version:
+  revision: "stable-manual-scaffold"
+  channel: "stable"
+
+project_type: app
+
+migration:
+  platforms:
+    - platform: root
+      create_revision: stable-manual-scaffold
+      base_revision: stable-manual-scaffold
+    - platform: android
+      create_revision: stable-manual-scaffold
+      base_revision: stable-manual-scaffold
+    - platform: ios
+      create_revision: stable-manual-scaffold
+      base_revision: stable-manual-scaffold
+    - platform: web
+      create_revision: stable-manual-scaffold
+      base_revision: stable-manual-scaffold
