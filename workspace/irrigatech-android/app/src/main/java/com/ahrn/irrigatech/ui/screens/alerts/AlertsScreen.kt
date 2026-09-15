@@ -4,6 +4,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,14 +22,11 @@ import androidx.compose.material.icons.outlined.BatteryAlert
 import androidx.compose.material.icons.outlined.ElectricBolt
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material.icons.outlined.NotificationsNone
-import androidx.compose.material.icons.outlined.Opacity
 import androidx.compose.material.icons.outlined.Security
-import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.Umbrella
 import androidx.compose.material.icons.outlined.WaterDrop
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.FilterChip
+import androidx.compose.material3.FilterChipDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -48,9 +46,11 @@ import com.ahrn.irrigatech.data.model.AlertKind
 import com.ahrn.irrigatech.data.model.AlertSeverity
 import com.ahrn.irrigatech.ui.AppViewModelProvider
 import com.ahrn.irrigatech.ui.components.EmptyState
-import com.ahrn.irrigatech.ui.components.SectionHeader
+import com.ahrn.irrigatech.ui.theme.Radii
 import com.ahrn.irrigatech.ui.theme.Spacing
 import com.ahrn.irrigatech.ui.theme.StatusColors
+import com.ahrn.irrigatech.ui.theme.glassCard
+import com.ahrn.irrigatech.ui.theme.glassPalette
 import com.ahrn.irrigatech.ui.util.formatDateTime
 import com.ahrn.irrigatech.ui.viewmodel.AlertsViewModel
 
@@ -74,14 +74,19 @@ fun AlertsScreen(
                 modifier = Modifier.weight(1f),
             )
             if (state.alerts.isNotEmpty()) {
-                TextButton(onClick = { viewModel.clearHistory() }) {
+                TextButton(
+                    onClick = { viewModel.clearHistory() },
+                    colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
+                        contentColor = StatusColors.alert,
+                    ),
+                ) {
                     Text("Clear")
                 }
             }
         }
 
         LazyRow(
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(horizontal = Spacing.lg),
+            contentPadding = PaddingValues(horizontal = Spacing.lg),
             horizontalArrangement = Arrangement.spacedBy(Spacing.sm),
         ) {
             item {
@@ -89,6 +94,11 @@ fun AlertsScreen(
                     selected = state.filter == null,
                     onClick = { viewModel.setFilter(null) },
                     label = { Text("All") },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+                        selectedLabelColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    shape = RoundedCornerShape(Radii.chip),
                 )
             }
             items(AlertKind.entries.toList()) { kind ->
@@ -96,6 +106,11 @@ fun AlertsScreen(
                     selected = state.filter == kind,
                     onClick = { viewModel.setFilter(kind) },
                     label = { Text(kind.label()) },
+                    colors = FilterChipDefaults.filterChipColors(
+                        selectedContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+                        selectedLabelColor = MaterialTheme.colorScheme.primary,
+                    ),
+                    shape = RoundedCornerShape(Radii.chip),
                 )
             }
         }
@@ -112,7 +127,7 @@ fun AlertsScreen(
 
         LazyColumn(
             modifier = Modifier.fillMaxSize(),
-            contentPadding = androidx.compose.foundation.layout.PaddingValues(
+            contentPadding = PaddingValues(
                 start = Spacing.lg,
                 end = Spacing.lg,
                 top = Spacing.md,
@@ -130,49 +145,46 @@ fun AlertsScreen(
 @Composable
 private fun AlertRow(alert: AlertEvent) {
     val tint = alert.severity.color()
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
+    val palette = glassPalette
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .glassCard(shape = RoundedCornerShape(Radii.card), palette = palette)
+            .padding(Spacing.lg),
+        verticalAlignment = Alignment.Top,
     ) {
-        Row(
-            modifier = Modifier.padding(Spacing.lg),
-            verticalAlignment = Alignment.Top,
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(tint.copy(alpha = 0.16f), RoundedCornerShape(14.dp)),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .size(40.dp)
-                    .background(tint.copy(alpha = 0.14f), RoundedCornerShape(12.dp)),
-                contentAlignment = Alignment.Center,
-            ) {
-                Icon(
-                    imageVector = alert.kind.icon(),
-                    contentDescription = null,
-                    tint = tint,
-                    modifier = Modifier.size(22.dp),
-                )
-            }
-            Spacer(Modifier.width(Spacing.md))
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = alert.title,
-                    style = MaterialTheme.typography.titleSmall,
-                    fontWeight = FontWeight.SemiBold,
-                )
-                Spacer(Modifier.height(Spacing.xs))
-                Text(
-                    text = alert.detail,
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-                Spacer(Modifier.height(Spacing.xs))
-                Text(
-                    text = formatDateTime(alert.timestamp),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                )
-            }
+            Icon(
+                imageVector = alert.kind.icon(),
+                contentDescription = null,
+                tint = tint,
+                modifier = Modifier.size(22.dp),
+            )
+        }
+        Spacer(Modifier.width(Spacing.md))
+        Column(modifier = Modifier.weight(1f)) {
+            Text(
+                text = alert.title,
+                style = MaterialTheme.typography.titleSmall,
+                fontWeight = FontWeight.SemiBold,
+            )
+            Spacer(Modifier.height(Spacing.xs))
+            Text(
+                text = alert.detail,
+                style = MaterialTheme.typography.bodySmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+            Spacer(Modifier.height(Spacing.xs))
+            Text(
+                text = formatDateTime(alert.timestamp),
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
         }
     }
 }
@@ -198,7 +210,7 @@ private fun AlertKind.icon(): ImageVector = when (this) {
 @Composable
 private fun AlertSeverity.color(): Color = when (this) {
     AlertSeverity.INFO -> StatusColors.info
-    AlertSeverity.GOOD -> StatusColors.good
+    AlertSeverity.GOOD -> StatusColors.active
     AlertSeverity.WARNING -> StatusColors.warning
     AlertSeverity.ALERT -> StatusColors.alert
 }

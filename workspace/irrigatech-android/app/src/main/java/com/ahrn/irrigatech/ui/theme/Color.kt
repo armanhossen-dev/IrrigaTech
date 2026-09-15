@@ -2,31 +2,71 @@ package com.ahrn.irrigatech.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// Brand palette derived from the IrrigaTech logo.
+// ---------------------------------------------------------------------------
+// IrrigaTech v2 — "Modern AgTech Glassmorphism" palette
+// ---------------------------------------------------------------------------
+
+// Primary — growth / agriculture
+val EmeraldDeep = Color(0xFF10B981)
+val MintFresh = Color(0xFF34D399)
+val EmeraldDark = Color(0xFF047857)
+
+// Secondary — water / hydration
+val AquaCyan = Color(0xFF06B6D4)
+val SkyBlue = Color(0xFF3B82F6)
+val AquaDeep = Color(0xFF0E7490)
+
+// Status & accent
+val StatusActive = Color(0xFF22C55E)   // running / good
+val StatusWarning = Color(0xFFF59E0B)  // amber
+val StatusAlert = Color(0xFFEF4444)    // red
+val StatusPower = Color(0xFFEAB308)    // battery / voltage yellow
+val StatusInfo = AquaCyan
+
+// Lightened variants for dark-mode legibility
+val StatusActiveLight = Color(0xFF6EE7A8)
+val StatusWarningLight = Color(0xFFFBC373)
+val StatusAlertLight = Color(0xFFF29B9B)
+val StatusPowerLight = Color(0xFFF3D673)
+val StatusInfoLight = Color(0xFF7DD9EA)
+
+// Backgrounds
+val SlateUltraDark = Color(0xFF0F172A)   // dark mode base
+val SlateDarkSurface = Color(0xFF162238) // dark mode elevated surface
+val SlateDarkSurfaceAlt = Color(0xFF1C2B45)
+val IceSlate = Color(0xFFF8FAFC)         // light mode base
+val IceSlateSurface = Color(0xFFFFFFFF)  // light mode elevated surface
+val IceSlateSurfaceAlt = Color(0xFFEEF2F7)
+
+// Outlines / dividers
+val OutlineLight = Color(0xFFDCE3EA)
+val OutlineDark = Color(0xFF2A3852)
+
+// Text
+val TextPrimaryLight = Color(0xFF0B1220)
+val TextSecondaryLight = Color(0xFF5B6675)
+val TextPrimaryDark = Color(0xFFEAF1F8)
+val TextSecondaryDark = Color(0xFF97A5BC)
+
+// Glassmorphism surface tints (used with alpha over background gradients)
+val GlassTintLight = Color(0xFFFFFFFF)
+val GlassTintDark = Color(0xFF1E2A44)
+val GlassBorderLight = Color(0x33FFFFFF)
+val GlassBorderDark = Color(0x33AFC6E8)
+
+// Legacy Brand colors (deprecated, used by login/splash)
 val BrandGreen = Color(0xFF1B6E3C)
 val BrandGreenDark = Color(0xFF14552E)
-val BrandGreenLight = Color(0xFF4CAF70)
-val SkyBlue = Color(0xFF2196F3)
-val SkyBlueDark = Color(0xFF1565C0)
-val SkyBlueLight = Color(0xFF64B5F6)
 
-// Neutral surfaces: white / charcoal, per the visual rules.
-val SurfaceLight = Color(0xFFFFFFFF)
-val SurfaceLightVariant = Color(0xFFF4F6F8)
-val SurfaceDark = Color(0xFF121417)
-val SurfaceDarkVariant = Color(0xFF1C2024)
-val OutlineLight = Color(0xFFDDE2E7)
-val OutlineDark = Color(0xFF2E343A)
+/** Weather-condition tints for the hero card's animated backdrop. */
+enum class WeatherMood { SUNNY, CLOUDY, RAIN, NIGHT }
 
-// Status colors: green good, amber warning, red alert, blue info.
-val StatusGood = Color(0xFF1B8A4B)
-val StatusWarning = Color(0xFFB26A00)
-val StatusAlert = Color(0xFFC62828)
-val StatusInfo = Color(0xFF1565C0)
-val StatusGoodLight = Color(0xFF7FD49F)
-val StatusWarningLight = Color(0xFFE8B266)
-val StatusAlertLight = Color(0xFFE88A8A)
-val StatusInfoLight = Color(0xFF7FB3E8)
+fun weatherGradient(mood: WeatherMood, dark: Boolean): List<Color> = when (mood) {
+    WeatherMood.SUNNY -> if (dark) listOf(Color(0xFF1E3A5F), Color(0xFF16324D)) else listOf(SkyBlue, AquaCyan)
+    WeatherMood.CLOUDY -> if (dark) listOf(Color(0xFF243044), Color(0xFF1A2436)) else listOf(Color(0xFF93A5C2), Color(0xFFB9C6DA))
+    WeatherMood.RAIN -> if (dark) listOf(Color(0xFF0E2233), Color(0xFF12314A)) else listOf(AquaDeep, SkyBlue)
+    WeatherMood.NIGHT -> listOf(Color(0xFF0B1424), Color(0xFF16223A))
+}
 
 // Accent alternatives offered in Settings.
 data class AccentSwatch(
@@ -36,8 +76,11 @@ data class AccentSwatch(
     val secondary: Color,
 )
 
-val AccentGreenBlue = AccentSwatch("green_blue", "Green Blue", BrandGreen, SkyBlue)
-val AccentOcean = AccentSwatch("ocean", "Ocean Blue", SkyBlue, Color(0xFF00A0A0))
-val AccentEarth = AccentSwatch("earth", "Earth Green", BrandGreen, Color(0xFF7A8B2E))
+val AccentEmeraldAqua = AccentSwatch("emerald_aqua", "Emerald Aqua", EmeraldDeep, AquaCyan)
+val AccentOceanBlue = AccentSwatch("ocean_blue", "Ocean Blue", SkyBlue, AquaCyan)
+val AccentMintSky = AccentSwatch("mint_sky", "Mint Sky", MintFresh, SkyBlue)
 
-val AccentSwatches = listOf(AccentGreenBlue, AccentOcean, AccentEarth)
+// Legacy Accents
+val AccentGreenBlue = AccentSwatch("green_blue", "Green Blue", BrandGreen, SkyBlue)
+
+val AccentSwatches = listOf(AccentEmeraldAqua, AccentOceanBlue, AccentMintSky, AccentGreenBlue)

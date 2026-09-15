@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.CheckCircle
@@ -20,14 +22,14 @@ import androidx.compose.material.icons.outlined.ErrorOutline
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -43,7 +45,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.ahrn.irrigatech.data.model.ConnectionStatus
 import com.ahrn.irrigatech.ui.AppViewModelProvider
-import com.ahrn.irrigatech.ui.components.SectionHeader
+import com.ahrn.irrigatech.ui.theme.Radii
 import com.ahrn.irrigatech.ui.theme.Spacing
 import com.ahrn.irrigatech.ui.theme.StatusColors
 import com.ahrn.irrigatech.ui.viewmodel.SetupViewModel
@@ -58,13 +60,19 @@ fun SetupScreen(
     val devices by viewModel.devices.collectAsStateWithLifecycle()
     val testState by viewModel.testState.collectAsStateWithLifecycle()
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .statusBarsPadding(),
+    ) {
         Text(
-            text = "Connection Setup",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
+            text = "Connection setup",
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.lg),
         )
+
+        HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
         Column(
             modifier = Modifier
@@ -72,90 +80,93 @@ fun SetupScreen(
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = Spacing.lg),
         ) {
-            Card(
-                shape = MaterialTheme.shapes.medium,
-                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-                elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-            ) {
-                Column(modifier = Modifier.padding(Spacing.lg)) {
-                    OutlinedTextField(
-                        value = form.name,
-                        onValueChange = { value -> viewModel.edit { it.copy(name = value) } },
-                        label = { Text("Device Name") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Spacer(Modifier.height(Spacing.md))
-                    OutlinedTextField(
-                        value = form.token,
-                        onValueChange = { value -> viewModel.edit { it.copy(token = value) } },
-                        label = { Text("Blynk Auth Token") },
-                        singleLine = true,
-                        visualTransformation = if (form.showToken) {
-                            VisualTransformation.None
-                        } else {
-                            PasswordVisualTransformation()
-                        },
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                        trailingIcon = {
-                            IconButton(onClick = { viewModel.toggleTokenVisibility() }) {
-                                Icon(
-                                    imageVector = if (form.showToken) {
-                                        Icons.Outlined.VisibilityOff
-                                    } else {
-                                        Icons.Outlined.Visibility
-                                    },
-                                    contentDescription = if (form.showToken) {
-                                        "Hide token"
-                                    } else {
-                                        "Show token"
-                                    },
-                                )
-                            }
-                        },
-                        supportingText = {
-                            Text("Stored encrypted on this device only.")
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Spacer(Modifier.height(Spacing.md))
-                    OutlinedTextField(
-                        value = form.templateId,
-                        onValueChange = { value -> viewModel.edit { it.copy(templateId = value) } },
-                        label = { Text("Template ID") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Spacer(Modifier.height(Spacing.md))
-                    OutlinedTextField(
-                        value = form.location,
-                        onValueChange = { value -> viewModel.edit { it.copy(location = value) } },
-                        label = { Text("Farm Location") },
-                        singleLine = true,
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                    Spacer(Modifier.height(Spacing.md))
-                    OutlinedTextField(
-                        value = form.telegramBot,
-                        onValueChange = { value -> viewModel.edit { it.copy(telegramBot = value) } },
-                        label = { Text("Telegram Bot") },
-                        singleLine = true,
-                        placeholder = { Text("@my_irrigation_bot") },
-                        modifier = Modifier.fillMaxWidth(),
-                    )
-                }
-            }
+            Spacer(Modifier.height(Spacing.lg))
 
+            // Fields sit directly on the background — the labels and
+            // field borders already carry enough structure without a
+            // card wrapped around them.
+            OutlinedTextField(
+                value = form.name,
+                onValueChange = { value -> viewModel.edit { it.copy(name = value) } },
+                label = { Text("Device name") },
+                singleLine = true,
+                shape = RoundedCornerShape(Radii.button),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
             Spacer(Modifier.height(Spacing.md))
-
-            TestResultCard(testState)
-
+            OutlinedTextField(
+                value = form.token,
+                onValueChange = { value -> viewModel.edit { it.copy(token = value) } },
+                label = { Text("Blynk auth token") },
+                singleLine = true,
+                shape = RoundedCornerShape(Radii.button),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                ),
+                visualTransformation = if (form.showToken) {
+                    VisualTransformation.None
+                } else {
+                    PasswordVisualTransformation()
+                },
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
+                trailingIcon = {
+                    IconButton(onClick = { viewModel.toggleTokenVisibility() }) {
+                        Icon(
+                            imageVector = if (form.showToken) {
+                                Icons.Outlined.VisibilityOff
+                            } else {
+                                Icons.Outlined.Visibility
+                            },
+                            contentDescription = if (form.showToken) {
+                                "Hide token"
+                            } else {
+                                "Show token"
+                            },
+                        )
+                    }
+                },
+                supportingText = {
+                    Text("Stored encrypted on this device only.")
+                },
+                modifier = Modifier.fillMaxWidth(),
+            )
             Spacer(Modifier.height(Spacing.md))
+            OutlinedTextField(
+                value = form.templateId,
+                onValueChange = { value -> viewModel.edit { it.copy(templateId = value) } },
+                label = { Text("Template ID") },
+                singleLine = true,
+                shape = RoundedCornerShape(Radii.button),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+            Spacer(Modifier.height(Spacing.md))
+            OutlinedTextField(
+                value = form.location,
+                onValueChange = { value -> viewModel.edit { it.copy(location = value) } },
+                label = { Text("Farm location") },
+                singleLine = true,
+                shape = RoundedCornerShape(Radii.button),
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = MaterialTheme.colorScheme.primary,
+                ),
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            TestResultRow(testState)
+
+            Spacer(Modifier.height(Spacing.lg))
 
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.md)) {
                 OutlinedButton(
                     onClick = { viewModel.testConnection() },
                     enabled = form.token.isNotBlank() && testState !is TestState.Testing,
+                    shape = RoundedCornerShape(Radii.button),
                     modifier = Modifier.weight(1f),
                 ) {
                     if (testState is TestState.Testing) {
@@ -165,23 +176,30 @@ fun SetupScreen(
                         )
                         Spacer(Modifier.size(Spacing.sm))
                     }
-                    Text("Test Connection")
+                    Text("Test connection")
                 }
                 Button(
                     onClick = { viewModel.save { onDone() } },
                     enabled = form.canSave,
+                    shape = RoundedCornerShape(Radii.button),
                     modifier = Modifier.weight(1f),
                 ) {
-                    Text("Save Device")
+                    Text("Save device")
                 }
             }
 
             if (devices.isNotEmpty()) {
-                Spacer(Modifier.height(Spacing.xl))
-                SectionHeader(
-                    title = "SAVED DEVICES",
-                    modifier = Modifier.padding(horizontal = 0.dp),
+                Spacer(Modifier.height(Spacing.xxl))
+
+                Text(
+                    text = "Saved devices",
+                    style = MaterialTheme.typography.titleSmall,
+                    fontWeight = FontWeight.SemiBold,
                 )
+
+                Spacer(Modifier.height(Spacing.sm))
+                HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
                 devices.forEach { device ->
                     SavedDeviceRow(
                         name = device.name,
@@ -190,7 +208,9 @@ fun SetupScreen(
                         onActivate = { viewModel.loadDevice(device) },
                         onDelete = { viewModel.deleteDevice(device) },
                     )
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
                 }
+
                 Spacer(Modifier.height(Spacing.sm))
                 TextButton(onClick = { viewModel.newDevice() }) {
                     Icon(Icons.Outlined.Add, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -205,37 +225,31 @@ fun SetupScreen(
 }
 
 @Composable
-private fun TestResultCard(state: TestState) {
-    val good = StatusColors.good
-    val alert = StatusColors.alert
+private fun TestResultRow(state: TestState) {
     when (state) {
         is TestState.Idle -> Unit
         is TestState.Testing -> Unit
         is TestState.Done -> {
             val ok = state.result.status == ConnectionStatus.OK
-            Card(
-                shape = MaterialTheme.shapes.small,
-                colors = CardDefaults.cardColors(
-                    containerColor = (if (ok) good else alert).copy(alpha = 0.10f),
-                ),
+            val tint = if (ok) StatusColors.active else StatusColors.alert
+
+            Spacer(Modifier.height(Spacing.md))
+            Row(
                 modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
             ) {
-                Row(
-                    modifier = Modifier.padding(Spacing.md),
-                    verticalAlignment = Alignment.CenterVertically,
-                ) {
-                    Icon(
-                        imageVector = if (ok) Icons.Outlined.CheckCircle else Icons.Outlined.ErrorOutline,
-                        contentDescription = null,
-                        tint = if (ok) good else alert,
-                    )
-                    Spacer(Modifier.size(Spacing.sm))
-                    Text(
-                        text = state.result.message,
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onSurface,
-                    )
-                }
+                Icon(
+                    imageVector = if (ok) Icons.Outlined.CheckCircle else Icons.Outlined.ErrorOutline,
+                    contentDescription = null,
+                    tint = tint,
+                    modifier = Modifier.size(20.dp),
+                )
+                Spacer(Modifier.size(Spacing.sm))
+                Text(
+                    text = state.result.message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                )
             }
         }
     }
@@ -249,47 +263,51 @@ private fun SavedDeviceRow(
     onActivate: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    Card(
-        shape = MaterialTheme.shapes.small,
-        colors = CardDefaults.cardColors(
-            containerColor = if (active) {
-                MaterialTheme.colorScheme.primaryContainer
-            } else {
-                MaterialTheme.colorScheme.surface
-            },
-        ),
+    Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = Spacing.xs),
+            .padding(vertical = Spacing.sm),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
-        Row(
-            modifier = Modifier.padding(horizontal = Spacing.md, vertical = Spacing.sm),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
+        Column(modifier = Modifier.weight(1f)) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
                 Text(
                     text = name,
                     style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.Medium,
+                    fontWeight = if (active) FontWeight.SemiBold else FontWeight.Medium,
+                    color = if (active) {
+                        MaterialTheme.colorScheme.primary
+                    } else {
+                        MaterialTheme.colorScheme.onSurface
+                    },
                 )
-                if (location.isNotBlank()) {
-                    Text(
-                        text = location,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                if (active) {
+                    Spacer(Modifier.size(Spacing.xs))
+                    Icon(
+                        imageVector = Icons.Outlined.CheckCircle,
+                        contentDescription = "Currently editing",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp),
                     )
                 }
             }
-            TextButton(onClick = onActivate, enabled = !active) {
-                Text(if (active) "Editing" else "Edit")
-            }
-            IconButton(onClick = onDelete) {
-                Icon(
-                    imageVector = Icons.Outlined.Delete,
-                    contentDescription = "Delete $name",
-                    tint = MaterialTheme.colorScheme.error,
+            if (location.isNotBlank()) {
+                Text(
+                    text = location,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+        }
+        TextButton(onClick = onActivate, enabled = !active) {
+            Text(if (active) "Editing" else "Edit")
+        }
+        IconButton(onClick = onDelete) {
+            Icon(
+                imageVector = Icons.Outlined.Delete,
+                contentDescription = "Delete $name",
+                tint = MaterialTheme.colorScheme.error,
+            )
         }
     }
 }

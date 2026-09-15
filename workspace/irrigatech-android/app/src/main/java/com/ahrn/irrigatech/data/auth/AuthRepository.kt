@@ -21,6 +21,7 @@ import kotlinx.coroutines.tasks.await
 interface AuthRepository {
     val currentUser: Flow<AuthUser?>
     suspend fun signInWithGoogle(activity: Activity): Result<AuthUser>
+    suspend fun signInDemo(): Result<AuthUser>
     suspend fun signUpWithEmail(email: String, password: String): Result<AuthUser>
     suspend fun signOut()
 }
@@ -40,6 +41,18 @@ class DefaultAuthRepository(
     private val firebaseAvailable: Boolean
         get() = FirebaseApp.getApps(context).isNotEmpty()
 
+    override suspend fun signInDemo(): Result<AuthUser> {
+        val demo = AuthUser(
+            uid = "demo-user",
+            displayName = "Demo Farmer",
+            email = "demo@irrigatech.app",
+            photoUrl = null,
+            isDemo = true,
+        )
+        session.save(demo)
+        return Result.success(demo)
+    }
+
     override suspend fun signInWithGoogle(activity: Activity): Result<AuthUser> {
         if (!firebaseAvailable) {
             return signInDemo()
@@ -58,7 +71,7 @@ class DefaultAuthRepository(
 
     override suspend fun signUpWithEmail(email: String, password: String): Result<AuthUser> {
         if (!firebaseAvailable) {
-            return signInDemo()
+            return signInDemoInternal()
         }
         return try {
             val auth = FirebaseAuth.getInstance()
@@ -119,7 +132,7 @@ class DefaultAuthRepository(
         )
     }
 
-    private suspend fun signInDemo(): Result<AuthUser> {
+    private suspend fun signInDemoInternal(): Result<AuthUser> {
         val demo = AuthUser(
             uid = "demo-user",
             displayName = "Demo Farmer",

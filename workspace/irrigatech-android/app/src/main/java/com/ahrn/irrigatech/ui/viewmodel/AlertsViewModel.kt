@@ -5,9 +5,10 @@ import androidx.lifecycle.viewModelScope
 import com.ahrn.irrigatech.data.model.AlertEvent
 import com.ahrn.irrigatech.data.repository.AlertRepository
 import com.ahrn.irrigatech.data.model.AlertKind
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -18,7 +19,7 @@ data class AlertsUiState(
 
 class AlertsViewModel(private val repository: AlertRepository) : ViewModel() {
 
-    private var selectedFilter: AlertKind? = null
+    private val _filter = MutableStateFlow<AlertKind?>(null)
 
     val alerts: StateFlow<List<AlertEvent>> = repository.alerts.stateIn(
         scope = viewModelScope,
@@ -26,21 +27,19 @@ class AlertsViewModel(private val repository: AlertRepository) : ViewModel() {
         initialValue = emptyList(),
     )
 
-    val filtered: StateFlow<AlertsUiState> = repository.alerts
-        .map { list ->
-            AlertsUiState(
-                filter = selectedFilter,
-                alerts = selectedFilter?.let { kind -> list.filter { it.kind == kind } } ?: list,
-            )
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5_000),
-            initialValue = AlertsUiState(),
+    val filtered: StateFlow<AlertsUiState> = combine(repository.alerts, _filter) { list, filter ->
+        AlertsUiState(
+            filter = filter,
+            alerts = filter?.let { kind -> list.filter { it.kind == kind } } ?: list,
         )
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.WhileSubscribed(5_000),
+        initialValue = AlertsUiState(),
+    )
 
     fun setFilter(kind: AlertKind?) {
-        selectedFilter = kind
+        _filter.value = kind
     }
 
     fun clearHistory() {

@@ -12,7 +12,6 @@ data class DeviceConfig(
     val name: String,
     val templateId: String = DEFAULT_TEMPLATE,
     val location: String = "",
-    val telegramBot: String = "",
 ) {
     companion object {
         const val DEFAULT_TEMPLATE = "TMPL6lSiWFFsO"

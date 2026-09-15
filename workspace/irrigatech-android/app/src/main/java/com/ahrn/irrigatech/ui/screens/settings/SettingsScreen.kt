@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.Logout
@@ -23,8 +24,6 @@ import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Devices
 import androidx.compose.material.icons.outlined.Info
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -32,13 +31,16 @@ import androidx.compose.material3.SegmentedButton
 import androidx.compose.material3.SegmentedButtonDefaults
 import androidx.compose.material3.SingleChoiceSegmentedButtonRow
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Switch
+import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -50,10 +52,13 @@ import com.ahrn.irrigatech.data.model.DeviceConfig
 import com.ahrn.irrigatech.ui.AppViewModelProvider
 import com.ahrn.irrigatech.ui.components.SectionHeader
 import com.ahrn.irrigatech.ui.theme.AccentSwatches
+import com.ahrn.irrigatech.ui.theme.Radii
 import com.ahrn.irrigatech.ui.theme.Spacing
+import com.ahrn.irrigatech.ui.theme.StatusColors
 import com.ahrn.irrigatech.ui.theme.ThemeModeOption
+import com.ahrn.irrigatech.ui.theme.glassCard
+import com.ahrn.irrigatech.ui.theme.glassPalette
 import com.ahrn.irrigatech.ui.viewmodel.SettingsViewModel
-import androidx.compose.ui.platform.LocalContext
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -98,6 +103,10 @@ fun SettingsScreen(
                             index = index,
                             count = ThemeModeOption.entries.size,
                         ),
+                        colors = SegmentedButtonDefaults.colors(
+                            activeContainerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.18f),
+                            activeContentColor = MaterialTheme.colorScheme.primary,
+                        ),
                     ) {
                         Text(option.label())
                     }
@@ -127,7 +136,12 @@ fun SettingsScreen(
                                     shape = CircleShape,
                                 )
                                 .padding(4.dp)
-                                .background(swatch.primary, CircleShape)
+                                .background(
+                                    androidx.compose.ui.graphics.Brush.linearGradient(
+                                        listOf(swatch.primary, swatch.secondary),
+                                    ),
+                                    CircleShape,
+                                )
                                 .clickable { viewModel.setAccent(swatch.id) },
                             contentAlignment = Alignment.Center,
                         ) {
@@ -135,7 +149,7 @@ fun SettingsScreen(
                                 Icon(
                                     imageVector = Icons.Outlined.Check,
                                     contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.onPrimary,
+                                    tint = androidx.compose.ui.graphics.Color.White,
                                     modifier = Modifier.size(20.dp),
                                 )
                             }
@@ -161,6 +175,10 @@ fun SettingsScreen(
                 onValueChange = { viewModel.setPollSeconds(it.toInt()) },
                 valueRange = 5f..30f,
                 steps = 24,
+                colors = SliderDefaults.colors(
+                    thumbColor = MaterialTheme.colorScheme.primary,
+                    activeTrackColor = MaterialTheme.colorScheme.primary,
+                ),
             )
             ToggleRow(
                 title = "Temperature in Celsius",
@@ -255,6 +273,9 @@ fun SettingsScreen(
             TextButton(
                 onClick = { viewModel.signOut { onSignedOut() } },
                 enabled = !signingOut,
+                colors = androidx.compose.material3.ButtonDefaults.textButtonColors(
+                    contentColor = StatusColors.alert,
+                ),
             ) {
                 Icon(
                     imageVector = Icons.AutoMirrored.Outlined.Logout,
@@ -301,16 +322,14 @@ fun SettingsScreen(
 
 @Composable
 private fun SettingsCard(content: @Composable () -> Unit) {
-    Card(
+    val palette = glassPalette
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = Spacing.lg, vertical = Spacing.xs),
-        shape = MaterialTheme.shapes.medium,
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-    ) {
-        Column(modifier = Modifier.padding(Spacing.lg)) { content() }
-    }
+            .padding(horizontal = Spacing.lg, vertical = Spacing.xs)
+            .glassCard(shape = RoundedCornerShape(Radii.card), palette = palette)
+            .padding(Spacing.lg),
+    ) { content() }
 }
 
 @Composable
@@ -334,7 +353,11 @@ private fun ToggleRow(
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
-        Switch(checked = checked, onCheckedChange = onCheckedChange)
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChange,
+            colors = SwitchDefaults.colors(checkedTrackColor = StatusColors.active),
+        )
     }
 }
 

@@ -45,6 +45,18 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
+    fun signInDemo() {
+        if (_signInState.value is SignInState.Loading) return
+        _signInState.value = SignInState.Loading
+        viewModelScope.launch {
+            val result = repository.signInDemo()
+            _signInState.value = result.fold(
+                onSuccess = { SignInState.Idle },
+                onFailure = { SignInState.Error(it.message ?: "Demo sign-in failed.") }
+            )
+        }
+    }
+
     fun signUp(email: String, password: String) {
         if (_signInState.value is SignInState.Loading) return
         _signInState.value = SignInState.Loading

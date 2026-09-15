@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Dashboard
 import androidx.compose.material.icons.outlined.Notifications
@@ -18,6 +19,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -51,7 +53,10 @@ private val bottomTabs = listOf(
 fun AppNavHost() {
     val navController = rememberNavController()
 
-    NavHost(navController = navController, startDestination = Routes.SPLASH) {
+    NavHost(
+        navController = navController,
+        startDestination = Routes.SPLASH,
+    ) {
         composable(Routes.SPLASH) {
             SplashScreen(
                 onFinished = { signedIn, hasDevice ->
@@ -106,9 +111,11 @@ fun AppNavHost() {
 private fun HomeShell(onSignedOut: () -> Unit) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = backStackEntry?.destination?.route
 
-    val showBar = currentRoute in bottomTabs.map { it.route }
+
+    val showBar = bottomTabs.any { tab ->
+        backStackEntry?.destination?.hierarchy?.any { it.route == tab.route } == true
+    }
 
     Scaffold(
         bottomBar = {
@@ -119,17 +126,16 @@ private fun HomeShell(onSignedOut: () -> Unit) {
             ) {
                 NavigationBar {
                     bottomTabs.forEach { tab ->
+                        val selected = backStackEntry?.destination?.hierarchy?.any { it.route == tab.route } == true
                         NavigationBarItem(
-                            selected = currentRoute == tab.route,
+                            selected = selected,
                             onClick = {
-                                if (currentRoute != tab.route) {
-                                    navController.navigate(tab.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
-                                        launchSingleTop = true
-                                        restoreState = true
+                                navController.navigate(tab.route) {
+                                    popUpTo(navController.graph.findStartDestination().id) {
+                                        saveState = true
                                     }
+                                    launchSingleTop = true
+                                    restoreState = true
                                 }
                             },
                             icon = { Icon(tab.icon, contentDescription = tab.label) },
@@ -145,12 +151,19 @@ private fun HomeShell(onSignedOut: () -> Unit) {
             startDestination = Routes.DASHBOARD,
             modifier = Modifier.padding(
                 bottom = if (showBar) innerPadding.calculateBottomPadding() else 0.dp,
-            ),
+            ).statusBarsPadding(),
         ) {
             composable(Routes.DASHBOARD) {
                 DashboardScreen(
-                    onOpenMotor = { motor -> navController.navigate(Routes.motor(motor)) },
-                    onOpenSetup = { navController.navigate(Routes.SETUP) },
+                    onOpenNotifications = {
+                        navController.navigate(Routes.ALERTS) {
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
+                            }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
                 )
             }
             composable(Routes.ALERTS) {

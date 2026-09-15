@@ -22,7 +22,6 @@ data class SetupForm(
     val token: String = "",
     val templateId: String = DeviceConfig.DEFAULT_TEMPLATE,
     val location: String = "",
-    val telegramBot: String = "",
     val showToken: Boolean = false,
 ) {
     val canSave: Boolean get() = name.isNotBlank() && token.isNotBlank()
@@ -64,7 +63,6 @@ class SetupViewModel(
                 token = tokenStore.readToken(device.id).orEmpty(),
                 templateId = device.templateId,
                 location = device.location,
-                telegramBot = device.telegramBot,
             )
         }
     }
@@ -84,7 +82,6 @@ class SetupViewModel(
                     name = current.name.ifBlank { "Controller" },
                     templateId = current.templateId,
                     location = current.location,
-                    telegramBot = current.telegramBot,
                 ),
                 current.token.trim(),
             )
@@ -101,7 +98,6 @@ class SetupViewModel(
                 name = current.name.trim(),
                 templateId = current.templateId.trim().ifBlank { DeviceConfig.DEFAULT_TEMPLATE },
                 location = current.location.trim(),
-                telegramBot = current.telegramBot.trim(),
             )
             tokenStore.saveToken(device.id, current.token.trim())
             deviceStore.upsert(device)
