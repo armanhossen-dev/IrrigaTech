@@ -70,3 +70,10 @@ gradle wrapper --gradle-version 8.9
 
 wcid
 342878600607-ls66raosmoer47lcahloc4fd52sc9ff6.apps.googleusercontent.com
+
+feed
+deployment id
+AKfycbzkUWJ30TIOy9qCQZ-15ofQ85ktZnbA6cEV3bDYQ8zY2sQhmOS4w2Gc83XVZTHSVwvf
+
+Web app
+https://script.google.com/macros/s/AKfycbzkUWJ30TIOy9qCQZ-15ofQ85ktZnbA6cEV3bDYQ8zY2sQhmOS4w2Gc83XVZTHSVwvf/exec
