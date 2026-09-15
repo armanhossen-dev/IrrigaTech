@@ -14,10 +14,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Frosted-glass card surface: translucent tint + soft border.
- * Falls back gracefully on devices where background blur isn't available —
- * the translucency + gradient alone reads as "glass" over the app's dark
- * slate / soft ice backgrounds.
+ * Card surface: translucent gradient + soft border for the glassmorphism
+ * theme, or a flat solid panel for the Pure Dark theme.
+ *
+ * Which style is used is driven entirely by [GlassPalette.gradient] — when
+ * false (Pure Dark), this paints [GlassPalette.tint] as a flat solid color
+ * with no blur, no glow, no translucency — pure minimal 2D.
  */
 fun Modifier.glassCard(
     shape: Shape = RoundedCornerShape(Radii.card),
@@ -25,17 +27,27 @@ fun Modifier.glassCard(
     elevation: Dp = Elevation.card,
 ): Modifier = this
     .clip(shape)
-    .background(
-        Brush.verticalGradient(
-            colors = listOf(
-                palette.tint.copy(alpha = 0.14f),
-                palette.tint.copy(alpha = 0.06f),
-            ),
-        ),
+    .then(
+        if (palette.gradient) {
+            Modifier.background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        palette.tint.copy(alpha = 0.14f),
+                        palette.tint.copy(alpha = 0.06f),
+                    ),
+                ),
+            )
+        } else {
+            Modifier.background(palette.tint)
+        },
     )
     .border(width = 1.dp, color = palette.border, shape = shape)
 
-/** A soft ambient glow behind an active/running element (e.g. a pump toggle). */
+/**
+ * A soft ambient glow behind an active/running element (e.g. a pump toggle).
+ * Not used by the Pure Dark theme's flat components — skip calling this
+ * when [LocalFlatSurfaces] is true if you want a strictly flat 2D look there.
+ */
 fun Modifier.glow(color: Color, radius: Dp = 24.dp): Modifier = this
     .blur(radius)
     .background(color.copy(alpha = 0.35f))

@@ -121,7 +121,9 @@ class BlynkDataSource(
     }
 
     private fun JsonElement.firstNumber(): Double? = when (this) {
-        is JsonPrimitive -> doubleOrNull ?: booleanOrNull?.let { if (it) 1.0 else 0.0 }
+        is JsonPrimitive -> {
+            doubleOrNull ?: content.toDoubleOrNull() ?: booleanOrNull?.let { if (it) 1.0 else 0.0 }
+        }
         is kotlinx.serialization.json.JsonArray -> firstOrNull()?.firstNumber()
         else -> null
     }

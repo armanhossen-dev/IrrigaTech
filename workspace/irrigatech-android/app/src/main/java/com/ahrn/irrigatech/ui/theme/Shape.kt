@@ -13,6 +13,15 @@ val IrrigaTechShapes = Shapes(
     extraLarge = RoundedCornerShape(32.dp),
 )
 
+/** Tighter, minimal 2D corners for the Pure Dark (flat, no-gradient) theme. */
+val IrrigaTechFlatShapes = Shapes(
+    extraSmall = RoundedCornerShape(4.dp),
+    small = RoundedCornerShape(6.dp),
+    medium = RoundedCornerShape(8.dp),
+    large = RoundedCornerShape(10.dp),
+    extraLarge = RoundedCornerShape(12.dp),
+)
+
 object Spacing {
     val xs = 4.dp
     val sm = 8.dp

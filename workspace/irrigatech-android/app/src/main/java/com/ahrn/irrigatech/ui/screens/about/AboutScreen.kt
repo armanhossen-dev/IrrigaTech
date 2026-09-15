@@ -241,7 +241,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 description = "Responsible for Android application development, " +
                         "software architecture, UI/UX implementation, Blynk IoT " +
                         "integration and overall system coordination.",
-                photoResId = R.drawable.img_arman,
+                photoResId = null,
                 primaryButtonText = "Visit site",
                 primaryButtonIcon = Icons.Outlined.OpenInNew,
                 onPrimaryButtonClick = ::openAhrnWebsite,
@@ -276,7 +276,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 description = "Contributes agricultural expertise to the project, " +
                         "including crop requirements, irrigation needs, soil conditions " +
                         "and practical agricultural application of the system.",
-                photoResId = R.drawable.img_logo, // TODO: Replace with actual photo
+                photoResId = null,
                 socialLinks = listOf(
                     SocialLink(
                         iconResId = R.drawable.ic_whatsapp,
@@ -313,7 +313,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 description = "Contributes to the electrical and electronic aspects " +
                         "of the irrigation system, including sensors, pump control, " +
                         "hardware connectivity and IoT integration.",
-                photoResId = R.drawable.img_logo, // TODO: Replace with actual photo
+                photoResId = null,
                 socialLinks = listOf(
                     SocialLink(
                         iconResId = R.drawable.ic_whatsapp,

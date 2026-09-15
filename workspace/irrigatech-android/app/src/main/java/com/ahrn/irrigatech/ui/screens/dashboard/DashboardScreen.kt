@@ -18,6 +18,7 @@ import androidx.compose.material.icons.outlined.Thermostat
 import androidx.compose.material.icons.outlined.Umbrella
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,9 +27,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.ahrn.irrigatech.data.model.MotorId
+import com.ahrn.irrigatech.ui.AppViewModelProvider
 import com.ahrn.irrigatech.ui.components.AlertBanner
 import com.ahrn.irrigatech.ui.components.BannerAlert
 import com.ahrn.irrigatech.ui.components.BannerSeverity
+import com.ahrn.irrigatech.ui.components.ConfirmDialog
 import com.ahrn.irrigatech.ui.components.KeypadModal
 import com.ahrn.irrigatech.ui.components.MetricItem
 import com.ahrn.irrigatech.ui.components.MetricsGrid
@@ -41,6 +47,7 @@ import com.ahrn.irrigatech.ui.components.WeatherUiState
 import com.ahrn.irrigatech.ui.theme.Spacing
 import com.ahrn.irrigatech.ui.theme.StatusColors
 import com.ahrn.irrigatech.ui.theme.WeatherMood
+import com.ahrn.irrigatech.ui.viewmodel.DashboardViewModel
 
 /**
  * UI-only state for the redesigned dashboard. Wire this to your existing
@@ -87,7 +94,60 @@ data class DashboardUiModel(
 
 @Composable
 fun DashboardScreen(
-    state: DashboardUiModel = DashboardUiModel(),
+    onOpenNotifications: () -> Unit = {},
+    onOpenProfile: () -> Unit = {},
+    viewModel: DashboardViewModel = viewModel(factory = AppViewModelProvider.Factory),
+) {
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        viewModel.poll()
+    }
+
+    state.pendingAction?.let { pending ->
+        ConfirmDialog(
+            title = "Turn on ${pending.motor.displayName}?",
+            message = "Confirm before the pump starts.",
+            confirmLabel = "Turn On",
+            onConfirm = { viewModel.confirmPending() },
+            onDismiss = { viewModel.dismissPending() },
+        )
+    }
+
+    val uiModel = remember(state) {
+        val snap = state.snapshot
+        DashboardUiModel(
+            deviceName = state.device?.name ?: "Field Controller",
+            online = !state.offline,
+            voltage = snap?.voltage ?: 0.0,
+            batteryPercent = (snap?.batteryPercent ?: 0.0).toInt(),
+            soilMoisturePercent = (snap?.moisturePercent ?: 0.0).toInt(),
+            tankLiters = if (snap?.tankFull == true) 10000 else 2000,
+            fieldPumpRunning = snap?.fieldMotorOn ?: false,
+            tankPumpRunning = snap?.tankMotorOn ?: false,
+            soilTempC = snap?.temperatureC ?: 0.0,
+            rain = snap?.rain ?: false,
+            fieldPumpBlockedReason = state.lockFor(MotorId.FIELD)?.reason,
+            tankPumpBlockedReason = state.lockFor(MotorId.TANK)?.reason,
+            keypadLocked = true, // Default to locked as per design
+            alerts = emptyList(), // TODO: map from alertRepository if needed
+        )
+    }
+
+    DashboardContent(
+        state = uiModel,
+        onToggleFieldPump = { viewModel.requestToggle(MotorId.FIELD) },
+        onToggleTankPump = { viewModel.requestToggle(MotorId.TANK) },
+        onInstantStopField = { viewModel.requestToggle(MotorId.FIELD) },
+        onInstantStopTank = { viewModel.requestToggle(MotorId.TANK) },
+        onOpenNotifications = onOpenNotifications,
+        onOpenProfile = onOpenProfile,
+    )
+}
+
+@Composable
+private fun DashboardContent(
+    state: DashboardUiModel,
     onToggleFieldPump: (Boolean) -> Unit = {},
     onToggleTankPump: (Boolean) -> Unit = {},
     onInstantStopField: () -> Unit = {},

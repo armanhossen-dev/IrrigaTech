@@ -38,6 +38,16 @@ val IceSlate = Color(0xFFF8FAFC)         // light mode base
 val IceSlateSurface = Color(0xFFFFFFFF)  // light mode elevated surface
 val IceSlateSurfaceAlt = Color(0xFFEEF2F7)
 
+// ---------------------------------------------------------------------------
+// Pure Dark — flat, minimal 2D, no-gradient theme (true grays, OLED-friendly)
+// ---------------------------------------------------------------------------
+val PureDarkBackground = Color(0xFF121212)   // near-black base, no tint
+val PureDarkSurface = Color(0xFF1C1C1E)      // flat elevated surface
+val PureDarkSurfaceAlt = Color(0xFF262628)   // flat "container" surface
+val PureDarkOutline = Color(0xFF3A3A3D)
+val PureDarkTextPrimary = Color(0xFFECECEC)
+val PureDarkTextSecondary = Color(0xFF9A9A9E)
+
 // Outlines / dividers
 val OutlineLight = Color(0xFFDCE3EA)
 val OutlineDark = Color(0xFF2A3852)
@@ -76,11 +86,22 @@ data class AccentSwatch(
     val secondary: Color,
 )
 
-val AccentEmeraldAqua = AccentSwatch("emerald_aqua", "Emerald Aqua", EmeraldDeep, AquaCyan)
 val AccentOceanBlue = AccentSwatch("ocean_blue", "Ocean Blue", SkyBlue, AquaCyan)
 val AccentMintSky = AccentSwatch("mint_sky", "Mint Sky", MintFresh, SkyBlue)
 
-// Legacy Accents
-val AccentGreenBlue = AccentSwatch("green_blue", "Green Blue", BrandGreen, SkyBlue)
+// New vivid, modern accents — bold enough to read clearly on both the
+// glassmorphism surfaces and the flat Pure Dark surfaces.
+val AccentSunsetCoral = AccentSwatch("sunset_coral", "Sunset Coral", Color(0xFFFF6B5B), Color(0xFFFFA45B))
+val AccentVioletNova = AccentSwatch("violet_nova", "Violet Nova", Color(0xFF8B5CF6), Color(0xFFEC4899))
+val AccentCyberLime = AccentSwatch("cyber_lime", "Cyber Lime", Color(0xFF84CC16), Color(0xFF14B8A6))
+val AccentCrimsonGold = AccentSwatch("crimson_gold", "Crimson Gold", Color(0xFFDC2626), Color(0xFFF59E0B))
 
-val AccentSwatches = listOf(AccentEmeraldAqua, AccentOceanBlue, AccentMintSky, AccentGreenBlue)
+val AccentSwatches = listOf(
+    AccentSteelCopper,
+    AccentOceanBlue,
+    AccentMintSky,
+    AccentSunsetCoral,
+    AccentVioletNova,
+    AccentCyberLime,
+    AccentCrimsonGold,
+)
