@@ -86,7 +86,7 @@ fun SettingsScreen(
             text = "Settings",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.lg),
+            modifier = Modifier.padding(horizontal = Spacing.lg, vertical = Spacing.md),
         )
 
         SectionHeader(title = "APPEARANCE")
@@ -95,7 +95,7 @@ fun SettingsScreen(
                 text = "Theme",
                 style = MaterialTheme.typography.bodyLarge,
             )
-            Spacer(Modifier.height(Spacing.sm))
+            Spacer(Modifier.height(Spacing.xs))
             SingleChoiceSegmentedButtonRow(modifier = Modifier.fillMaxWidth()) {
                 ThemeModeOption.entries.forEachIndexed { index, option ->
                     SegmentedButton(
@@ -115,12 +115,12 @@ fun SettingsScreen(
                 }
             }
 
-            Spacer(Modifier.height(Spacing.lg))
+            Spacer(Modifier.height(Spacing.md))
             Text(
                 text = "Accent colour",
                 style = MaterialTheme.typography.bodyLarge,
             )
-            Spacer(Modifier.height(Spacing.sm))
+            Spacer(Modifier.height(Spacing.xs))
             Row(horizontalArrangement = Arrangement.spacedBy(Spacing.lg)) {
                 AccentSwatches.forEach { swatch ->
                     val selected = settings.accentId == swatch.id
@@ -355,7 +355,7 @@ private fun SettingsCard(content: @Composable () -> Unit) {
             .fillMaxWidth()
             .padding(horizontal = Spacing.lg, vertical = Spacing.xs)
             .glassCard(shape = RoundedCornerShape(Radii.card), palette = palette)
-            .padding(Spacing.lg),
+            .padding(Spacing.md),
     ) { content() }
 }
 

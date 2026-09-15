@@ -31,14 +31,18 @@ data class MetricItem(
     val tint: Color,
 )
 
-/** 2x2 grid of compact telemetry cards: soil temp, voltage, rain, security. */
+/** Grid of compact telemetry cards. */
 @Composable
-fun MetricsGrid(items: List<MetricItem>, modifier: Modifier = Modifier) {
+fun MetricsGrid(
+    items: List<MetricItem>,
+    modifier: Modifier = Modifier,
+    columns: Int = 2
+) {
     Column(
         modifier = modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.spacedBy(Spacing.md),
     ) {
-        items.chunked(2).forEach { rowItems ->
+        items.chunked(columns).forEach { rowItems ->
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(Spacing.md),
@@ -46,7 +50,7 @@ fun MetricsGrid(items: List<MetricItem>, modifier: Modifier = Modifier) {
                 rowItems.forEach { item ->
                     MetricTile(item = item, modifier = Modifier.weight(1f))
                 }
-                if (rowItems.size == 1) {
+                repeat(columns - rowItems.size) {
                     androidx.compose.foundation.layout.Spacer(Modifier.weight(1f))
                 }
             }

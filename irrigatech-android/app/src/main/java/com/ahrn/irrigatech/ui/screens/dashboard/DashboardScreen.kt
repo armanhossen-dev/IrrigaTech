@@ -10,13 +10,16 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.ElectricBolt
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Thermostat
 import androidx.compose.material.icons.outlined.Umbrella
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -37,7 +40,6 @@ import com.ahrn.irrigatech.ui.components.BannerSeverity
 import com.ahrn.irrigatech.ui.components.ConfirmDialog
 import com.ahrn.irrigatech.ui.components.KeypadModal
 import com.ahrn.irrigatech.ui.components.MetricItem
-import com.ahrn.irrigatech.ui.components.MetricsGrid
 import com.ahrn.irrigatech.ui.components.PumpControlCard
 import com.ahrn.irrigatech.ui.components.SoilMoistureCard
 import com.ahrn.irrigatech.ui.components.TopStatusBar
@@ -47,6 +49,8 @@ import com.ahrn.irrigatech.ui.components.WeatherUiState
 import com.ahrn.irrigatech.ui.theme.Spacing
 import com.ahrn.irrigatech.ui.theme.StatusColors
 import com.ahrn.irrigatech.ui.theme.WeatherMood
+import com.ahrn.irrigatech.ui.util.formatTemperature
+import com.ahrn.irrigatech.ui.util.temperatureUnit
 import com.ahrn.irrigatech.ui.viewmodel.DashboardViewModel
 
 /**
@@ -83,6 +87,7 @@ data class DashboardUiModel(
     val tankPumpToggling: Boolean = false,
     val soilTempC: Double = 24.5,
     val rain: Boolean = false,
+    val useCelsius: Boolean = true,
     val keypadLocked: Boolean = true,
     val keypadError: String? = null,
     val userPhotoUrl: String? = null,
@@ -141,6 +146,7 @@ fun DashboardScreen(
             tankPumpRunning = snap?.tankMotorOn ?: false,
             soilTempC = snap?.temperatureC ?: 0.0,
             rain = snap?.rain ?: false,
+            useCelsius = state.celsius,
             fieldPumpBlockedReason = state.lockFor(MotorId.FIELD)?.reason,
             tankPumpBlockedReason = state.lockFor(MotorId.TANK)?.reason,
             fieldPumpToggling = state.togglingMotor == MotorId.FIELD,
@@ -221,7 +227,11 @@ private fun DashboardContent(
                 verticalArrangement = Arrangement.spacedBy(Spacing.lg),
             ) {
                 item {
-                    WeatherHeroCard(state = state.weather, modifier = Modifier.fillMaxWidth())
+                    WeatherHeroCard(
+                        state = state.weather,
+                        useCelsius = state.useCelsius,
+                        modifier = Modifier.fillMaxWidth()
+                    )
                 }
 
                 item {
@@ -239,33 +249,44 @@ private fun DashboardContent(
                 }
 
                 item {
-                    MetricsGrid(
-                        items = listOf(
-                            MetricItem(
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+                    ) {
+                        MetricCard(
+                            item = MetricItem(
                                 icon = Icons.Outlined.Thermostat,
                                 label = "Soil Temp",
-                                value = "%.3f°C".format(state.soilTempC),
+                                value = formatTemperature(state.soilTempC, state.useCelsius) + temperatureUnit(state.useCelsius),
                                 tint = StatusColors.warning,
                             ),
-                            MetricItem(
+                            modifier = Modifier.weight(1f),
+                        )
+                        MetricCard(
+                            item = MetricItem(
                                 icon = Icons.Outlined.ElectricBolt,
                                 label = "System Voltage",
-                                value = "%.3fV".format(state.voltage),
+                                value = "%.2fV".format(state.voltage),
                                 tint = StatusColors.power,
                             ),
-                            MetricItem(
+                            modifier = Modifier.weight(1f),
+                        )
+                        MetricCard(
+                            item = MetricItem(
                                 icon = Icons.Outlined.Umbrella,
                                 label = "Rain Sensor",
                                 value = if (state.rain) "Rain Active" else "No Rain",
                                 tint = if (state.rain) StatusColors.info else StatusColors.active,
                             ),
-                            MetricItem(
-                                icon = Icons.Outlined.Lock,
-                                label = "Security Status",
-                                value = if (state.keypadLocked) "Keypad Locked" else "Unlocked",
-                                tint = if (state.keypadLocked) StatusColors.info else StatusColors.active,
-                            ),
-                        ),
+                            modifier = Modifier.weight(1f),
+                        )
+                    }
+                }
+
+                item {
+                    SecurityStatusRow(
+                        locked = state.keypadLocked,
+                        modifier = Modifier.fillMaxWidth(),
                     )
                 }
 
@@ -299,5 +320,82 @@ private fun DashboardContent(
                 }
             }
         }
+    }
+}
+
+/**
+ * A single metric card: the value (number + unit) sits on its own row up
+ * top, with the icon and label together on a second row underneath.
+ */
+@Composable
+private fun MetricCard(
+    item: MetricItem,
+    modifier: Modifier = Modifier,
+) {
+    Column(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = MaterialTheme.shapes.medium,
+            )
+            .padding(horizontal = Spacing.sm, vertical = Spacing.md),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(6.dp),
+    ) {
+        Text(
+            text = item.value,
+            style = MaterialTheme.typography.titleMedium,
+            color = item.tint,
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(4.dp),
+        ) {
+            Icon(
+                imageVector = item.icon,
+                contentDescription = null,
+                tint = item.tint,
+                modifier = Modifier.size(14.dp),
+            )
+            Text(
+                text = item.label,
+                style = MaterialTheme.typography.labelSmall,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+    }
+}
+
+@Composable
+private fun SecurityStatusRow(
+    locked: Boolean,
+    modifier: Modifier = Modifier,
+) {
+    val tint = if (locked) StatusColors.info else StatusColors.active
+    Row(
+        modifier = modifier
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant,
+                shape = MaterialTheme.shapes.medium,
+            )
+            .padding(horizontal = Spacing.lg, vertical = Spacing.md),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(Spacing.md),
+    ) {
+        Icon(
+            imageVector = Icons.Outlined.Lock,
+            contentDescription = null,
+            tint = tint,
+        )
+        Text(
+            text = "Security Status",
+            style = MaterialTheme.typography.bodyMedium,
+            modifier = Modifier.weight(1f),
+        )
+        Text(
+            text = if (locked) "Keypad Locked" else "Unlocked",
+            style = MaterialTheme.typography.bodyMedium,
+            color = tint,
+        )
     }
 }

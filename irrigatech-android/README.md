@@ -107,3 +107,13 @@ The IrriGaTech project is a collaborative effort combining expertise across mult
 - **Save Water | Save Life** — A mission for a sustainable future.
 - This project is a production-ready template for IoT irrigation systems.
 - For issues or feedback, please visit [AHRN Portfolio](https://www.armanhossen.is-a.dev/).
+
+---
+
+## 📥 Releases
+
+You can download the latest production-ready APK directly from the GitHub releases page.
+
+- **Current Stable**: [v1.0.0](https://github.com/armanhossenripon/irrigatech-android/releases/latest)
+  - *Click the version above, then download the `app-release.apk` from the **Assets** section.*
+- **Try the Demo**: Not ready to link hardware? The app launches in **Demo Mode** by default. Simply sign in to explore the dashboard with live mock telemetry.

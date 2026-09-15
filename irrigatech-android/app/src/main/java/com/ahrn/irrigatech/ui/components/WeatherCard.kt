@@ -39,6 +39,8 @@ import com.ahrn.irrigatech.ui.theme.Spacing
 import com.ahrn.irrigatech.ui.theme.WeatherMood
 import com.ahrn.irrigatech.ui.theme.glassCard
 import com.ahrn.irrigatech.ui.theme.glassPalette
+import com.ahrn.irrigatech.ui.util.formatTemperature
+import com.ahrn.irrigatech.ui.util.temperatureUnit
 import kotlin.random.Random
 
 data class WeatherUiState(
@@ -51,7 +53,11 @@ data class WeatherUiState(
 )
 
 @Composable
-fun WeatherHeroCard(state: WeatherUiState, modifier: Modifier = Modifier) {
+fun WeatherHeroCard(
+    state: WeatherUiState,
+    modifier: Modifier = Modifier,
+    useCelsius: Boolean = true,
+) {
     val palette = glassPalette
     Box(
         modifier = modifier
@@ -69,7 +75,7 @@ fun WeatherHeroCard(state: WeatherUiState, modifier: Modifier = Modifier) {
             ) {
                 Column {
                     Text(
-                        text = "${state.temperatureC.toInt()}°C",
+                        text = "${formatTemperature(state.temperatureC, useCelsius)}${temperatureUnit(useCelsius)}",
                         style = MaterialTheme.typography.headlineLarge,
                         color = Color.White,
                         fontWeight = FontWeight.Bold,
