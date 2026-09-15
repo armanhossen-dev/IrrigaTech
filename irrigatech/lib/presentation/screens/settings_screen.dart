@@ -171,7 +171,7 @@ class SettingsScreen extends ConsumerWidget {
                 ),
                 Text(AppConstants.tagline),
                 SizedBox(height: 8),
-                const Text('Version 1.0.0  ·  ${AppConstants.credit}'),
+                Text('Version 1.0.0  ·  ${AppConstants.credit}'),
                 SizedBox(height: 8),
                 Text(
                   'Blynk template: Ecosense (TMPL6lSiWFFsO). Pins V0–V5.',

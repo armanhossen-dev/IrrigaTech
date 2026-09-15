@@ -21,6 +21,7 @@ import kotlinx.coroutines.tasks.await
 interface AuthRepository {
     val currentUser: Flow<AuthUser?>
     suspend fun signInWithGoogle(activity: Activity): Result<AuthUser>
+    suspend fun signUpWithEmail(email: String, password: String): Result<AuthUser>
     suspend fun signOut()
 }
 
@@ -51,6 +52,28 @@ class DefaultAuthRepository(
             Result.failure(e)
         } catch (e: Exception) {
             Log.w(TAG, "Google sign-in failed", e)
+            Result.failure(e)
+        }
+    }
+
+    override suspend fun signUpWithEmail(email: String, password: String): Result<AuthUser> {
+        if (!firebaseAvailable) {
+            return signInDemo()
+        }
+        return try {
+            val auth = FirebaseAuth.getInstance()
+            val result = auth.createUserWithEmailAndPassword(email, password).await()
+            val firebaseUser = requireNotNull(result.user) { "Firebase returned no user" }
+            val user = AuthUser(
+                uid = firebaseUser.uid,
+                displayName = firebaseUser.displayName,
+                email = firebaseUser.email,
+                photoUrl = firebaseUser.photoUrl?.toString(),
+            )
+            session.save(user)
+            Result.success(user)
+        } catch (e: Exception) {
+            Log.w(TAG, "Email sign-up failed", e)
             Result.failure(e)
         }
     }

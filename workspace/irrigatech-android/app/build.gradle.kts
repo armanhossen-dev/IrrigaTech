@@ -61,6 +61,11 @@ android {
 }
 
 dependencies {
+    // Import the BoM
+    implementation(platform("com.google.firebase:firebase-bom:34.18.0"))
+    // Add the Firebase Authentication dependency
+    implementation("com.google.firebase:firebase-auth")
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)

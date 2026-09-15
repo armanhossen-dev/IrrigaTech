@@ -45,6 +45,20 @@ class AuthViewModel(private val repository: AuthRepository) : ViewModel() {
         }
     }
 
+    fun signUp(email: String, password: String) {
+        if (_signInState.value is SignInState.Loading) return
+        _signInState.value = SignInState.Loading
+        viewModelScope.launch {
+            val result = repository.signUpWithEmail(email, password)
+            _signInState.value = result.fold(
+                onSuccess = { SignInState.Idle },
+                onFailure = {
+                    SignInState.Error(it.message ?: "Sign-up failed. Please try again.")
+                },
+            )
+        }
+    }
+
     fun clearError() {
         if (_signInState.value is SignInState.Error) _signInState.value = SignInState.Idle
     }
