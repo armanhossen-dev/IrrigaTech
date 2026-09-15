@@ -114,6 +114,6 @@ The IrriGaTech project is a collaborative effort combining expertise across mult
 
 You can download the latest production-ready APK directly from the GitHub releases page.
 
-- **Current Stable**: [v1.0.0](https://github.com/armanhossenripon/irrigatech-android/releases/latest)
+- **Current Stable**: [v1.0.0](https://github.com/armanhossen-dev/IrrigaTech/releases/tag/v1.0.0%2B1)
   - *Click the version above, then download the `app-release.apk` from the **Assets** section.*
 - **Try the Demo**: Not ready to link hardware? The app launches in **Demo Mode** by default. Simply sign in to explore the dashboard with live mock telemetry.
