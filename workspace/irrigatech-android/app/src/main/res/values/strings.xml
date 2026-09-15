@@ -3,11 +3,7 @@
     <string name="app_name">IrrigaTech</string>
     <string name="tagline">Save Water | Save Life</string>
 
-    <!-- Replace with the Web client ID from Firebase Console > Authentication >
-         Google > Web SDK configuration. The google-services plugin also emits a
-         matching value as default_web_client_id; this placeholder keeps the
-         project building before Firebase is configured. -->
-    <string name="google_web_client_id" translatable="false">REPLACE_WITH_FIREBASE_WEB_CLIENT_ID</string>
+    <string name="google_web_client_id" translatable="false">342878600607-ls66raosmoer47lcahloc4fd52sc9ff6.apps.googleusercontent.com</string>
 
     <string name="cd_logo">IrrigaTech logo</string>
     <string name="cd_temperature">Temperature sensor</string>
