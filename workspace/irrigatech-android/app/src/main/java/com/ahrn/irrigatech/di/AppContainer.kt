@@ -13,6 +13,8 @@ import com.ahrn.irrigatech.data.remote.MockDataSource
 import com.ahrn.irrigatech.data.repository.AlertRepository
 import com.ahrn.irrigatech.data.repository.DefaultSensorRepository
 import com.ahrn.irrigatech.data.repository.SensorRepository
+import com.ahrn.irrigatech.feedback.FeedbackApi
+import com.ahrn.irrigatech.feedback.FeedbackRepository
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
@@ -34,14 +36,31 @@ class AppContainer(private val context: Context) {
     }
 
     private val okHttpClient: OkHttpClient = OkHttpClient.Builder()
-        .connectTimeout(10, TimeUnit.SECONDS)
-        .readTimeout(15, TimeUnit.SECONDS)
-        .writeTimeout(15, TimeUnit.SECONDS)
+        .connectTimeout(15, TimeUnit.SECONDS)
+        .readTimeout(20, TimeUnit.SECONDS)
+        .writeTimeout(20, TimeUnit.SECONDS)
         .addInterceptor(
             HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.BASIC
             },
         )
+        .addInterceptor { chain ->
+            val request = chain.request()
+            val response = chain.proceed(request)
+            // Google Apps Script returns 302 redirect for POST requests.
+            // OkHttp follows it as GET by default, but we need to preserve POST.
+            if (response.code == 302 && request.url.host == "script.google.com") {
+                val location = response.header("Location")
+                if (location != null) {
+                    response.close()
+                    val newRequest = request.newBuilder()
+                        .url(location)
+                        .build()
+                    return@addInterceptor chain.proceed(newRequest)
+                }
+            }
+            response
+        }
         .build()
 
     private val retrofit: Retrofit = Retrofit.Builder()
@@ -64,6 +83,10 @@ class AppContainer(private val context: Context) {
         blynk = blynkDataSource,
         mock = mockDataSource,
     )
+
+    private val feedbackApi: FeedbackApi = retrofit.create(FeedbackApi::class.java)
+
+    val feedbackRepository: FeedbackRepository = FeedbackRepository(feedbackApi)
 
     val authRepository: AuthRepository = DefaultAuthRepository(
         context = context,

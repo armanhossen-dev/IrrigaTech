@@ -28,6 +28,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.ahrn.irrigatech.data.model.MotorId
+import com.ahrn.irrigatech.feedback.FeedbackScreen
 import com.ahrn.irrigatech.ui.screens.about.AboutScreen
 import com.ahrn.irrigatech.ui.screens.alerts.AlertsScreen
 import com.ahrn.irrigatech.ui.screens.dashboard.DashboardScreen
@@ -172,6 +173,7 @@ private fun HomeShell(onSignedOut: () -> Unit) {
             composable(Routes.SETTINGS) {
                 SettingsScreen(
                     onOpenAbout = { navController.navigate(Routes.ABOUT) },
+                    onOpenFeedback = { navController.navigate(Routes.FEEDBACK) },
                     onOpenSetup = { navController.navigate(Routes.SETUP) },
                     onSignedOut = onSignedOut,
                 )
@@ -189,6 +191,9 @@ private fun HomeShell(onSignedOut: () -> Unit) {
             }
             composable(Routes.ABOUT) {
                 AboutScreen(onBack = { navController.popBackStack() })
+            }
+            composable(Routes.FEEDBACK) {
+                FeedbackScreen(onBack = { navController.popBackStack() })
             }
         }
     }

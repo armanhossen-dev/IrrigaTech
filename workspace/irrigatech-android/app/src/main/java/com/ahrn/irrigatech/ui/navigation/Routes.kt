@@ -12,6 +12,7 @@ object Routes {
     const val ALERTS = "alerts"
     const val SETTINGS = "settings"
     const val ABOUT = "about"
+    const val FEEDBACK = "feedback"
 
     const val MOTOR = "motor/{motorId}"
     fun motor(motor: MotorId) = "motor/${motor.name}"

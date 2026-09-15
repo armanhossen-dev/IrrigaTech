@@ -5,6 +5,7 @@ import androidx.lifecycle.viewmodel.CreationExtras
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.ahrn.irrigatech.IrrigaTechApp
+import com.ahrn.irrigatech.feedback.FeedbackViewModel
 import com.ahrn.irrigatech.ui.viewmodel.AlertsViewModel
 import com.ahrn.irrigatech.ui.viewmodel.AuthViewModel
 import com.ahrn.irrigatech.ui.viewmodel.DashboardViewModel
@@ -15,6 +16,13 @@ object AppViewModelProvider {
 
     val Factory = viewModelFactory {
         initializer { AuthViewModel(app().container.authRepository) }
+
+        initializer {
+            FeedbackViewModel(
+                repository = app().container.feedbackRepository,
+                sessionStore = app().container.sessionStore
+            )
+        }
 
         initializer {
             SetupViewModel(

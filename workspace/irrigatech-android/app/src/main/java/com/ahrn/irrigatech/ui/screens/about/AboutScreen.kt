@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,7 +26,6 @@ import androidx.compose.material.icons.outlined.Agriculture
 import androidx.compose.material.icons.outlined.Code
 import androidx.compose.material.icons.outlined.Engineering
 import androidx.compose.material.icons.outlined.OpenInNew
-import androidx.compose.material.icons.outlined.Public
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.AssistChipDefaults
 import androidx.compose.material3.Button
@@ -235,27 +235,31 @@ fun AboutScreen(onBack: () -> Unit) {
             // are added as a secondary icon row.
             TeamMemberRow(
                 icon = Icons.Outlined.Code,
-                name = "AHRN",
-                department = "Software Development",
+                name = "Md. Arman Hossen Ripon",
+                department = "Computer Science & Engineering",
                 role = "Lead Developer & System Integration",
                 description = "Responsible for Android application development, " +
                         "software architecture, UI/UX implementation, Blynk IoT " +
                         "integration and overall system coordination.",
+                photoResId = R.drawable.img_arman,
                 primaryButtonText = "Visit site",
                 primaryButtonIcon = Icons.Outlined.OpenInNew,
                 onPrimaryButtonClick = ::openAhrnWebsite,
                 socialLinks = listOf(
                     SocialLink(
-                        icon = Icons.Outlined.Code,
+                        iconResId = R.drawable.ic_github,
                         contentDescription = "GitHub",
-                        // TODO: replace with actual GitHub profile URL
-                        onClick = { openUrl("https://github.com/ahrn") },
+                        onClick = { openUrl("https://github.com/armanhossen-dev/") },
                     ),
                     SocialLink(
-                        icon = Icons.Outlined.Public,
+                        iconResId = R.drawable.ic_linkedin,
+                        contentDescription = "LinkedIn",
+                        onClick = { openUrl("https://www.linkedin.com/in/armanhossenripon/") },
+                    ),
+                    SocialLink(
+                        iconResId = R.drawable.ic_web,
                         contentDescription = "Portfolio",
-                        // TODO: replace with actual portfolio URL if different from the site above
-                        onClick = { openUrl("https://ahrn.vercel.app/") },
+                        onClick = { openUrl("https://www.armanhossen.is-a.dev/") },
                     ),
                 ),
             )
@@ -272,17 +276,27 @@ fun AboutScreen(onBack: () -> Unit) {
                 description = "Contributes agricultural expertise to the project, " +
                         "including crop requirements, irrigation needs, soil conditions " +
                         "and practical agricultural application of the system.",
+                photoResId = R.drawable.img_logo, // TODO: Replace with actual photo
                 socialLinks = listOf(
                     SocialLink(
-                        icon = Icons.Outlined.Public,
+                        iconResId = R.drawable.ic_whatsapp,
                         contentDescription = "WhatsApp",
                         onClick = { openWhatsApp("8801408246383") },
                     ),
                     SocialLink(
-                        icon = Icons.Outlined.Public,
+                        iconResId = R.drawable.ic_facebook,
                         contentDescription = "Facebook",
-                        // TODO: replace with actual Facebook profile URL
-                        onClick = { openUrl("https://facebook.com/") },
+                        onClick = { openUrl("https://www.facebook.com/almozahid.monir") },
+                    ),
+                    SocialLink(
+                        iconResId = R.drawable.ic_linkedin,
+                        contentDescription = "LinkedIn",
+                        onClick = { openUrl("https://linkedin.com/in/almozahid") },
+                    ),
+                    SocialLink(
+                        iconResId = R.drawable.ic_web,
+                        contentDescription = "Portfolio",
+                        onClick = { openUrl("#") },
                     ),
                 ),
             )
@@ -299,17 +313,27 @@ fun AboutScreen(onBack: () -> Unit) {
                 description = "Contributes to the electrical and electronic aspects " +
                         "of the irrigation system, including sensors, pump control, " +
                         "hardware connectivity and IoT integration.",
+                photoResId = R.drawable.img_logo, // TODO: Replace with actual photo
                 socialLinks = listOf(
                     SocialLink(
-                        icon = Icons.Outlined.Public,
+                        iconResId = R.drawable.ic_whatsapp,
                         contentDescription = "WhatsApp",
                         onClick = { openWhatsApp("8801798978244") },
                     ),
                     SocialLink(
-                        icon = Icons.Outlined.Public,
+                        iconResId = R.drawable.ic_facebook,
                         contentDescription = "Facebook",
-                        // TODO: replace with actual Facebook profile URL
-                        onClick = { openUrl("https://facebook.com/") },
+                        onClick = { openUrl("https://www.facebook.com/md.shoaib.bin.yousuf") },
+                    ),
+                    SocialLink(
+                        iconResId = R.drawable.ic_linkedin,
+                        contentDescription = "LinkedIn",
+                        onClick = { openUrl("https://linkedin.com/in/shoaib") },
+                    ),
+                    SocialLink(
+                        iconResId = R.drawable.ic_web,
+                        contentDescription = "Portfolio",
+                        onClick = { openUrl("https://studentshub.daffodilvarsity.edu.bd/portfolio/mdshoaib-yousuf-253-33-394/") },
                     ),
                 ),
             )
@@ -439,6 +463,7 @@ private fun TeamMemberRow(
     department: String,
     role: String,
     description: String,
+    photoResId: Int? = null,
     primaryButtonText: String? = null,
     primaryButtonIcon: ImageVector? = null,
     onPrimaryButtonClick: (() -> Unit)? = null,
@@ -473,9 +498,22 @@ private fun TeamMemberRow(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
+
+            if (photoResId != null) {
+                Spacer(Modifier.width(Spacing.md))
+                Image(
+                    painter = painterResource(photoResId),
+                    contentDescription = "Photo of $name",
+                    modifier = Modifier
+                        .size(56.dp)
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
 
-        Spacer(Modifier.height(Spacing.sm))
+        Spacer(Modifier.height(2.dp))
 
         // Department shown as a professional-looking assist chip instead of
         // a plain label/value row.

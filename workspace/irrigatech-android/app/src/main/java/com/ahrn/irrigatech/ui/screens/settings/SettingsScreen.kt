@@ -23,6 +23,7 @@ import androidx.compose.material.icons.automirrored.outlined.Logout
 import androidx.compose.material.icons.automirrored.outlined.OpenInNew
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Devices
+import androidx.compose.material.icons.outlined.Feedback
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -64,6 +65,7 @@ import com.ahrn.irrigatech.ui.viewmodel.SettingsViewModel
 @Composable
 fun SettingsScreen(
     onOpenAbout: () -> Unit,
+    onOpenFeedback: () -> Unit,
     onOpenSetup: () -> Unit,
     onSignedOut: () -> Unit,
     viewModel: SettingsViewModel = viewModel(factory = AppViewModelProvider.Factory),
@@ -287,7 +289,7 @@ fun SettingsScreen(
             }
         }
 
-        SectionHeader(title = "ABOUT")
+        SectionHeader(title = "ABOUT & FEEDBACK")
         SettingsCard {
             Row(
                 modifier = Modifier
@@ -304,6 +306,31 @@ fun SettingsScreen(
                 Spacer(Modifier.width(Spacing.md))
                 Text(
                     text = "About ${stringResource(R.string.app_name)}",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(1f),
+                )
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.OpenInNew,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp),
+                )
+            }
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable(onClick = onOpenFeedback)
+                    .padding(vertical = Spacing.sm),
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Feedback,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                )
+                Spacer(Modifier.width(Spacing.md))
+                Text(
+                    text = "Send Feedback",
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f),
                 )
