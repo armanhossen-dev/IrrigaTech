@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ahrn.irrigatech.data.local.DeviceConfigStore
 import com.ahrn.irrigatech.data.local.SecureTokenStore
+import com.ahrn.irrigatech.data.local.SessionStore
 import com.ahrn.irrigatech.data.local.SettingsStore
 import com.ahrn.irrigatech.data.model.DeviceConfig
 import com.ahrn.irrigatech.data.model.MotorId
@@ -38,6 +39,10 @@ data class DashboardUiState(
     val togglingMotor: MotorId? = null,
     val pendingAction: PendingMotorAction? = null,
     val celsius: Boolean = true,
+    val keypadLocked: Boolean = true,
+    val keypadError: String? = null,
+    val userPhotoUrl: String? = null,
+    val userDisplayName: String? = null,
 ) {
     fun lockFor(motor: MotorId): MotorLock? {
         val current = snapshot ?: return null
@@ -57,6 +62,7 @@ class DashboardViewModel(
     private val deviceStore: DeviceConfigStore,
     private val tokenStore: SecureTokenStore,
     private val settingsStore: SettingsStore,
+    private val sessionStore: SessionStore,
     private val alertRepository: AlertRepository,
     private val repository: SensorRepository,
 ) : ViewModel() {
@@ -76,6 +82,11 @@ class DashboardViewModel(
                 _uiState.update { it.copy(celsius = settings.useCelsius) }
             }
         }
+        viewModelScope.launch {
+            sessionStore.user.collect { user ->
+                _uiState.update { it.copy(userPhotoUrl = user?.photoUrl, userDisplayName = user?.displayName) }
+            }
+        }
     }
 
     /**
@@ -85,7 +96,7 @@ class DashboardViewModel(
     suspend fun poll() {
         while (coroutineContext.isActive) {
             fetch(silent = _uiState.value.snapshot != null)
-            val seconds = settingsStore.settings.first().pollSeconds.coerceIn(5, 30)
+            val seconds = settingsStore.settings.first().pollSeconds.coerceIn(1, 30)
             delay(seconds * 1000L)
         }
     }
@@ -156,16 +167,18 @@ class DashboardViewModel(
         }
     }
 
-    fun requestToggle(motor: MotorId) {
+    fun requestToggle(motor: MotorId, bypassSafety: Boolean = false) {
         val state = _uiState.value
         val snapshot = state.snapshot ?: return
-        if (state.lockFor(motor) != null) return
         val turningOn = !snapshot.isOn(motor)
-        if (turningOn) {
-            _uiState.update { it.copy(pendingAction = PendingMotorAction(motor, turningOn = true)) }
-        } else {
-            applyToggle(motor, on = false)
+
+        // Show a temporary warning if safety conditions are met, but don't block.
+        val lock = state.lockFor(motor)
+        if (turningOn && lock != null) {
+            _uiState.update { it.copy(error = "Manual Override: ${lock.reason}") }
         }
+
+        applyToggle(motor, turningOn)
     }
 
     fun confirmPending() {
@@ -175,18 +188,41 @@ class DashboardViewModel(
     }
 
     fun dismissPending() {
-        _uiState.update { it.copy(pendingAction = null) }
+        _uiState.update { it.copy(pendingAction = null, keypadError = null) }
+    }
+
+    fun stopMotor(motor: MotorId) {
+        applyToggle(motor, on = false)
+    }
+
+    fun verifyKeypadPin(pin: String) {
+        if (pin == "1234") { // Default security PIN
+            val pending = _uiState.value.pendingAction
+            _uiState.update { it.copy(keypadLocked = false, keypadError = null, pendingAction = null) }
+            if (pending != null) {
+                applyToggle(pending.motor, on = true)
+            }
+        } else {
+            _uiState.update { it.copy(keypadError = "Incorrect PIN. Try again.") }
+        }
+    }
+
+    fun lockKeypad() {
+        _uiState.update { it.copy(keypadLocked = true) }
     }
 
     private fun applyToggle(motor: MotorId, on: Boolean) {
         val device = _uiState.value.device ?: return
         _uiState.update { it.copy(togglingMotor = motor) }
         viewModelScope.launch {
-            repository.setMotor(device, token, motor, on).fold(
+            // Ensure we have the latest token before writing
+            val currentToken = tokenStore.readToken(device.id)
+            repository.setMotor(device, currentToken, motor, on).fold(
                 onSuccess = {
                     _uiState.update {
                         it.copy(togglingMotor = null, error = null)
                     }
+                    // Immediate fetch to confirm change
                     fetch(silent = true)
                 },
                 onFailure = { error ->

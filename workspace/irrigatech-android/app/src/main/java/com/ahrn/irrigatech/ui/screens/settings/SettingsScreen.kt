@@ -175,8 +175,8 @@ fun SettingsScreen(
             Slider(
                 value = settings.pollSeconds.toFloat(),
                 onValueChange = { viewModel.setPollSeconds(it.toInt()) },
-                valueRange = 5f..30f,
-                steps = 24,
+                valueRange = 1f..30f,
+                steps = 28,
                 colors = SliderDefaults.colors(
                     thumbColor = MaterialTheme.colorScheme.primary,
                     activeTrackColor = MaterialTheme.colorScheme.primary,

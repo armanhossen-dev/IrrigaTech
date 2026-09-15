@@ -79,9 +79,14 @@ data class DashboardUiModel(
     val fieldPumpBlockedReason: String? = null,
     val tankPumpRunning: Boolean = false,
     val tankPumpBlockedReason: String? = "Tank full — auto cut-off active",
+    val fieldPumpToggling: Boolean = false,
+    val tankPumpToggling: Boolean = false,
     val soilTempC: Double = 24.5,
     val rain: Boolean = false,
     val keypadLocked: Boolean = true,
+    val keypadError: String? = null,
+    val userPhotoUrl: String? = null,
+    val userDisplayName: String? = null,
     val alerts: List<BannerAlert> = listOf(
         BannerAlert(
             id = "rain-1",
@@ -104,21 +109,30 @@ fun DashboardScreen(
         viewModel.poll()
     }
 
-    state.pendingAction?.let { pending ->
-        ConfirmDialog(
-            title = "Turn on ${pending.motor.displayName}?",
-            message = "Confirm before the pump starts.",
-            confirmLabel = "Turn On",
-            onConfirm = { viewModel.confirmPending() },
-            onDismiss = { viewModel.dismissPending() },
-        )
+    if (state.pendingAction != null) {
+        if (state.keypadLocked) {
+            KeypadModal(
+                title = "Unlock ${state.pendingAction!!.motor.displayName}",
+                onSubmit = { viewModel.verifyKeypadPin(it) },
+                onDismiss = { viewModel.dismissPending() },
+                error = state.keypadError,
+            )
+        } else {
+            ConfirmDialog(
+                title = "Turn on ${state.pendingAction!!.motor.displayName}?",
+                message = "Confirm before the pump starts.",
+                confirmLabel = "Turn On",
+                onConfirm = { viewModel.confirmPending() },
+                onDismiss = { viewModel.dismissPending() },
+            )
+        }
     }
 
     val uiModel = remember(state) {
         val snap = state.snapshot
         DashboardUiModel(
             deviceName = state.device?.name ?: "Field Controller",
-            online = !state.offline,
+            online = !state.offline && !state.usingMock,
             voltage = snap?.voltage ?: 0.0,
             batteryPercent = (snap?.batteryPercent ?: 0.0).toInt(),
             soilMoisturePercent = (snap?.moisturePercent ?: 0.0).toInt(),
@@ -129,17 +143,36 @@ fun DashboardScreen(
             rain = snap?.rain ?: false,
             fieldPumpBlockedReason = state.lockFor(MotorId.FIELD)?.reason,
             tankPumpBlockedReason = state.lockFor(MotorId.TANK)?.reason,
-            keypadLocked = true, // Default to locked as per design
-            alerts = emptyList(), // TODO: map from alertRepository if needed
+            fieldPumpToggling = state.togglingMotor == MotorId.FIELD,
+            tankPumpToggling = state.togglingMotor == MotorId.TANK,
+            fieldPumpRuntimeLabel = null,
+            keypadLocked = state.keypadLocked,
+            keypadError = state.keypadError,
+            userPhotoUrl = state.userPhotoUrl,
+            userDisplayName = state.userDisplayName,
+            alerts = state.error?.let {
+                listOf(
+                    BannerAlert(
+                        id = "error-1",
+                        icon = Icons.Outlined.Lock,
+                        message = it,
+                        severity = BannerSeverity.WARNING,
+                    )
+                )
+            } ?: emptyList(),
         )
     }
 
     DashboardContent(
         state = uiModel,
-        onToggleFieldPump = { viewModel.requestToggle(MotorId.FIELD) },
-        onToggleTankPump = { viewModel.requestToggle(MotorId.TANK) },
-        onInstantStopField = { viewModel.requestToggle(MotorId.FIELD) },
-        onInstantStopTank = { viewModel.requestToggle(MotorId.TANK) },
+        onToggleFieldPump = { checked ->
+            viewModel.requestToggle(MotorId.FIELD)
+        },
+        onToggleTankPump = { checked ->
+            viewModel.requestToggle(MotorId.TANK)
+        },
+        onInstantStopField = { viewModel.stopMotor(MotorId.FIELD) },
+        onInstantStopTank = { viewModel.stopMotor(MotorId.TANK) },
         onOpenNotifications = onOpenNotifications,
         onOpenProfile = onOpenProfile,
     )
@@ -156,7 +189,6 @@ private fun DashboardContent(
     onOpenProfile: () -> Unit = {},
 ) {
     var alertsExpanded by remember { mutableStateOf(false) }
-    var showKeypad by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -172,6 +204,8 @@ private fun DashboardContent(
                 unreadAlerts = state.alerts.size,
                 onNotificationsClick = onOpenNotifications,
                 onProfileClick = onOpenProfile,
+                userPhotoUrl = state.userPhotoUrl,
+                userDisplayName = state.userDisplayName,
             )
 
             AlertBanner(
@@ -210,13 +244,13 @@ private fun DashboardContent(
                             MetricItem(
                                 icon = Icons.Outlined.Thermostat,
                                 label = "Soil Temp",
-                                value = "${state.soilTempC}°C",
+                                value = "%.3f°C".format(state.soilTempC),
                                 tint = StatusColors.warning,
                             ),
                             MetricItem(
                                 icon = Icons.Outlined.ElectricBolt,
                                 label = "System Voltage",
-                                value = "${state.voltage}V",
+                                value = "%.3fV".format(state.voltage),
                                 tint = StatusColors.power,
                             ),
                             MetricItem(
@@ -229,7 +263,7 @@ private fun DashboardContent(
                                 icon = Icons.Outlined.Lock,
                                 label = "Security Status",
                                 value = if (state.keypadLocked) "Keypad Locked" else "Unlocked",
-                                tint = StatusColors.info,
+                                tint = if (state.keypadLocked) StatusColors.info else StatusColors.active,
                             ),
                         ),
                     )
@@ -243,14 +277,9 @@ private fun DashboardContent(
                         runtimeLabel = state.fieldPumpRuntimeLabel,
                         blockedReason = state.fieldPumpBlockedReason
                             ?: if (state.rain) "Blocked automatically — rain detected" else null,
-                        onToggle = { checked ->
-                            if (!checked || !state.keypadLocked) {
-                                onToggleFieldPump(checked)
-                            } else {
-                                showKeypad = true
-                            }
-                        },
+                        onToggle = onToggleFieldPump,
                         onInstantStop = onInstantStopField,
+                        isLoading = state.fieldPumpToggling,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
@@ -262,29 +291,13 @@ private fun DashboardContent(
                         isRunning = state.tankPumpRunning,
                         runtimeLabel = null,
                         blockedReason = state.tankPumpBlockedReason,
-                        onToggle = { checked ->
-                            if (!checked || !state.keypadLocked) {
-                                onToggleTankPump(checked)
-                            } else {
-                                showKeypad = true
-                            }
-                        },
+                        onToggle = onToggleTankPump,
                         onInstantStop = onInstantStopTank,
+                        isLoading = state.tankPumpToggling,
                         modifier = Modifier.fillMaxWidth(),
                     )
                 }
             }
-        }
-
-        if (showKeypad) {
-            KeypadModal(
-                title = "Confirm manual override",
-                onSubmit = { pin ->
-                    // TODO wire to viewModel.verifyKeypadPin(pin)
-                    showKeypad = false
-                },
-                onDismiss = { showKeypad = false },
-            )
         }
     }
 }

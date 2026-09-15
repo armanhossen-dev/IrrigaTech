@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.PowerSettingsNew
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
@@ -54,6 +55,7 @@ fun PumpControlCard(
     onToggle: (Boolean) -> Unit,
     onInstantStop: () -> Unit,
     modifier: Modifier = Modifier,
+    isLoading: Boolean = false,
 ) {
     val palette = glassPalette
     val accent = if (isRunning) StatusColors.active else MaterialTheme.colorScheme.onSurfaceVariant
@@ -81,15 +83,23 @@ fun PumpControlCard(
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                 )
             }
-            Switch(
-                checked = isRunning,
-                onCheckedChange = onToggle,
-                enabled = isRunning || blockedReason == null,
-                colors = SwitchDefaults.colors(
-                    checkedTrackColor = StatusColors.active,
-                    checkedThumbColor = Color.White,
-                ),
-            )
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(24.dp).padding(4.dp),
+                    strokeWidth = 2.dp,
+                    color = StatusColors.info,
+                )
+            } else {
+                Switch(
+                    checked = isRunning,
+                    onCheckedChange = onToggle,
+                    enabled = true,
+                    colors = SwitchDefaults.colors(
+                        checkedTrackColor = StatusColors.active,
+                        checkedThumbColor = Color.White,
+                    ),
+                )
+            }
         }
 
         androidx.compose.foundation.layout.Spacer(Modifier.height(Spacing.md))

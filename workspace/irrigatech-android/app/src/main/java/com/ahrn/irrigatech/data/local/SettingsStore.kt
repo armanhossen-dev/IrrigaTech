@@ -6,7 +6,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
-import com.ahrn.irrigatech.ui.theme.AccentGreenBlue
+import com.ahrn.irrigatech.ui.theme.AccentSteelCopper
 import com.ahrn.irrigatech.ui.theme.AccentSwatches
 import com.ahrn.irrigatech.ui.theme.ThemeModeOption
 import kotlinx.coroutines.flow.Flow
@@ -16,8 +16,8 @@ private val Context.settingsDataStore by preferencesDataStore(name = "irrigatech
 
 data class AppSettings(
     val themeMode: ThemeModeOption = ThemeModeOption.SYSTEM,
-    val accentId: String = AccentGreenBlue.id,
-    val pollSeconds: Int = 7,
+    val accentId: String = AccentSteelCopper.id,
+    val pollSeconds: Int = 1,
     val useCelsius: Boolean = true,
     val notifyTankFull: Boolean = true,
     val notifyRain: Boolean = true,
@@ -31,7 +31,7 @@ class SettingsStore(private val context: Context) {
         AppSettings(
             themeMode = prefs[KEY_THEME]?.let { runCatching { ThemeModeOption.valueOf(it) }.getOrNull() }
                 ?: ThemeModeOption.SYSTEM,
-            accentId = prefs[KEY_ACCENT] ?: AccentGreenBlue.id,
+            accentId = prefs[KEY_ACCENT] ?: AccentSteelCopper.id,
             pollSeconds = prefs[KEY_POLL] ?: 7,
             useCelsius = prefs[KEY_CELSIUS] ?: true,
             notifyTankFull = prefs[KEY_NOTIFY_TANK] ?: true,
@@ -51,7 +51,7 @@ class SettingsStore(private val context: Context) {
     }
 
     suspend fun setPollSeconds(seconds: Int) = context.settingsDataStore.edit {
-        it[KEY_POLL] = seconds.coerceIn(5, 30)
+        it[KEY_POLL] = seconds.coerceIn(1, 30)
     }
 
     suspend fun setCelsius(value: Boolean) = context.settingsDataStore.edit {

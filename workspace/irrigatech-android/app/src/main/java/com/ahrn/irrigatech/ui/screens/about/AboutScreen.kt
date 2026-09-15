@@ -231,35 +231,38 @@ fun AboutScreen(onBack: () -> Unit) {
 
             Spacer(Modifier.height(Spacing.lg))
 
-            // AHRN — website button stays exactly as it was; GitHub + Portfolio
-            // are added as a secondary icon row.
+            // ---------------------------------------------------------
+            // Team Member 1: EEE (Shoaib)
+            // ---------------------------------------------------------
             TeamMemberRow(
-                icon = Icons.Outlined.Code,
-                name = "Md. Arman Hossen Ripon",
-                department = "Computer Science & Engineering",
-                role = "Lead Developer & System Integration",
-                description = "Responsible for Android application development, " +
-                        "software architecture, UI/UX implementation, Blynk IoT " +
-                        "integration and overall system coordination.",
-                photoResId = null,
-                primaryButtonText = "Visit site",
-                primaryButtonIcon = Icons.Outlined.OpenInNew,
-                onPrimaryButtonClick = ::openAhrnWebsite,
+                icon = Icons.Outlined.Engineering,
+                name = "Md. Shoaib Bin Yousuf",
+                department = "Electrical And Electronic Engineering",
+                role = "IoT & Hardware Integration",
+                description = "Contributes to the electrical and electronic aspects " +
+                        "of the irrigation system, including sensors, pump control, " +
+                        "hardware connectivity and IoT integration.",
+                photoResId = R.drawable.shoaib,
                 socialLinks = listOf(
                     SocialLink(
-                        iconResId = R.drawable.ic_github,
-                        contentDescription = "GitHub",
-                        onClick = { openUrl("https://github.com/armanhossen-dev/") },
+                        iconResId = R.drawable.ic_whatsapp,
+                        contentDescription = "WhatsApp",
+                        onClick = { openWhatsApp("8801798978244") },
+                    ),
+                    SocialLink(
+                        iconResId = R.drawable.ic_facebook,
+                        contentDescription = "Facebook",
+                        onClick = { openUrl("https://www.facebook.com/md.shoaib.bin.yousuf") },
                     ),
                     SocialLink(
                         iconResId = R.drawable.ic_linkedin,
                         contentDescription = "LinkedIn",
-                        onClick = { openUrl("https://www.linkedin.com/in/armanhossenripon/") },
+                        onClick = { openUrl("https://linkedin.com/in/shoaib") },
                     ),
                     SocialLink(
                         iconResId = R.drawable.ic_web,
                         contentDescription = "Portfolio",
-                        onClick = { openUrl("https://www.armanhossen.is-a.dev/") },
+                        onClick = { openUrl("https://studentshub.daffodilvarsity.edu.bd/portfolio/mdshoaib-yousuf-253-33-394/") },
                     ),
                 ),
             )
@@ -268,6 +271,9 @@ fun AboutScreen(onBack: () -> Unit) {
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(Modifier.height(Spacing.lg))
 
+            // ---------------------------------------------------------
+            // Team Member 2: Agri (Monir)
+            // ---------------------------------------------------------
             TeamMemberRow(
                 icon = Icons.Outlined.Agriculture,
                 name = "Md. Al Mozahid Monir",
@@ -276,7 +282,7 @@ fun AboutScreen(onBack: () -> Unit) {
                 description = "Contributes agricultural expertise to the project, " +
                         "including crop requirements, irrigation needs, soil conditions " +
                         "and practical agricultural application of the system.",
-                photoResId = null,
+                photoResId = R.drawable.monir,
                 socialLinks = listOf(
                     SocialLink(
                         iconResId = R.drawable.ic_whatsapp,
@@ -305,35 +311,36 @@ fun AboutScreen(onBack: () -> Unit) {
             HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
             Spacer(Modifier.height(Spacing.lg))
 
+            // ---------------------------------------------------------
+            // Team Member 3: CSE (Arman)
+            // ---------------------------------------------------------
             TeamMemberRow(
-                icon = Icons.Outlined.Engineering,
-                name = "Md. Shoaib Bin Yousuf",
-                department = "Electrical And Electronic Engineering",
-                role = "IoT & Hardware Integration",
-                description = "Contributes to the electrical and electronic aspects " +
-                        "of the irrigation system, including sensors, pump control, " +
-                        "hardware connectivity and IoT integration.",
-                photoResId = null,
+                icon = Icons.Outlined.Code,
+                name = "Md. Arman Hossen Ripon",
+                department = "Computer Science & Engineering",
+                role = "Lead Developer & System Integration",
+                description = "Responsible for Android application development, " +
+                        "software architecture, UI/UX implementation, Blynk IoT " +
+                        "integration and overall system coordination.",
+                photoResId = R.drawable.arman,
+                primaryButtonText = "Visit site",
+                primaryButtonIcon = Icons.Outlined.OpenInNew,
+                onPrimaryButtonClick = ::openAhrnWebsite,
                 socialLinks = listOf(
                     SocialLink(
-                        iconResId = R.drawable.ic_whatsapp,
-                        contentDescription = "WhatsApp",
-                        onClick = { openWhatsApp("8801798978244") },
-                    ),
-                    SocialLink(
-                        iconResId = R.drawable.ic_facebook,
-                        contentDescription = "Facebook",
-                        onClick = { openUrl("https://www.facebook.com/md.shoaib.bin.yousuf") },
+                        iconResId = R.drawable.ic_github,
+                        contentDescription = "GitHub",
+                        onClick = { openUrl("https://github.com/armanhossen-dev/") },
                     ),
                     SocialLink(
                         iconResId = R.drawable.ic_linkedin,
                         contentDescription = "LinkedIn",
-                        onClick = { openUrl("https://linkedin.com/in/shoaib") },
+                        onClick = { openUrl("https://www.linkedin.com/in/armanhossenripon/") },
                     ),
                     SocialLink(
                         iconResId = R.drawable.ic_web,
                         contentDescription = "Portfolio",
-                        onClick = { openUrl("https://studentshub.daffodilvarsity.edu.bd/portfolio/mdshoaib-yousuf-253-33-394/") },
+                        onClick = { openUrl("https://www.armanhossen.is-a.dev/") },
                     ),
                 ),
             )

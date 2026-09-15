@@ -13,7 +13,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-enum class ThemeModeOption { LIGHT, DARK, PURE_DARK, SYSTEM }
+enum class ThemeModeOption { LIGHT, DARK, SYSTEM }
 
 /**
  * Default brand accent. A control-panel steel blue reads as instrumentation
@@ -34,7 +34,11 @@ val AccentSteelCopper = AccentSwatch(
     secondary = Color(0xFFAD7A3C), // muted copper — secondary accents, warm counterpoint
 )
 
-/** Whether the active theme should render flat, gradient-free surfaces (Pure Dark). */
+/**
+ * Whether the active theme should render flat, gradient-free surfaces.
+ * True whenever [ThemeModeOption] resolves to dark — the dark theme is now
+ * the flat, minimal "Pure Dark" look; only the light theme keeps glassmorphism.
+ */
 val LocalFlatSurfaces = compositionLocalOf { false }
 
 fun lightScheme(accent: AccentSwatch) = lightColorScheme(
@@ -57,32 +61,12 @@ fun lightScheme(accent: AccentSwatch) = lightColorScheme(
     outlineVariant = OutlineLight,
 )
 
-fun darkScheme(accent: AccentSwatch) = darkColorScheme(
-    primary = accent.primary.lighten(),
-    onPrimary = Color(0xFF0B1620),
-    primaryContainer = accent.primary.copy(alpha = 0.22f),
-    onPrimaryContainer = accent.primary.lighten(),
-    secondary = accent.secondary.lighten(),
-    onSecondary = Color(0xFF23150A),
-    secondaryContainer = accent.secondary.copy(alpha = 0.22f),
-    onSecondaryContainer = accent.secondary.lighten(),
-    error = StatusAlertLight,
-    background = SlateUltraDark,
-    onBackground = TextPrimaryDark,
-    surface = SlateDarkSurface,
-    onSurface = TextPrimaryDark,
-    surfaceVariant = SlateDarkSurfaceAlt,
-    onSurfaceVariant = TextSecondaryDark,
-    outline = OutlineDark,
-    outlineVariant = OutlineDark,
-)
-
 /**
- * Pure Dark — flat, minimal 2D theme. True grays, no gradients, no glow.
- * Backgrounds and surfaces are solid colors; cards render as flat panels
- * via [GlassPalette.gradient] = false (see [glassPalette] / [glassCard]).
+ * The dark theme: flat, minimal 2D, true grays, no gradients. Backgrounds
+ * and surfaces are solid colors; cards render as flat panels via
+ * [GlassPalette.gradient] = false (see [glassPalette] / [glassCard]).
  */
-fun pureDarkScheme(accent: AccentSwatch) = darkColorScheme(
+fun darkScheme(accent: AccentSwatch) = darkColorScheme(
     primary = accent.primary.lighten(),
     onPrimary = Color(0xFF0B0B0C),
     primaryContainer = PureDarkSurfaceAlt,
@@ -124,16 +108,17 @@ object StatusColors {
 
 /**
  * Glass surface tokens resolved per theme — used by [com.ahrn.irrigatech.ui.components.glassCard].
- * [gradient] is false for the Pure Dark theme, so [glassCard] paints a flat solid
+ * [gradient] is false in the dark theme, so [glassCard] paints a flat solid
  * panel instead of a translucent gradient — no blur, no glow, minimal 2D.
+ * The light theme keeps the translucent glassmorphism look.
  */
 data class GlassPalette(val tint: Color, val border: Color, val gradient: Boolean = true)
 
 val glassPalette: GlassPalette
-    @Composable get() = when {
-        LocalFlatSurfaces.current -> GlassPalette(tint = PureDarkSurface, border = PureDarkOutline, gradient = false)
-        isSystemInDarkTheme() -> GlassPalette(tint = GlassTintDark, border = GlassBorderDark, gradient = true)
-        else -> GlassPalette(tint = GlassTintLight, border = GlassBorderLight, gradient = true)
+    @Composable get() = if (LocalFlatSurfaces.current) {
+        GlassPalette(tint = PureDarkSurface, border = PureDarkOutline, gradient = false)
+    } else {
+        GlassPalette(tint = GlassTintLight, border = GlassBorderLight, gradient = true)
     }
 
 @Composable
@@ -145,15 +130,9 @@ fun IrrigaTechTheme(
     val dark = when (themeMode) {
         ThemeModeOption.LIGHT -> false
         ThemeModeOption.DARK -> true
-        ThemeModeOption.PURE_DARK -> true
         ThemeModeOption.SYSTEM -> isSystemInDarkTheme()
     }
-    val flatSurfaces = themeMode == ThemeModeOption.PURE_DARK
-    val scheme = when {
-        flatSurfaces -> pureDarkScheme(accent)
-        dark -> darkScheme(accent)
-        else -> lightScheme(accent)
-    }
+    val scheme = if (dark) darkScheme(accent) else lightScheme(accent)
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -164,11 +143,11 @@ fun IrrigaTechTheme(
         }
     }
 
-    CompositionLocalProvider(LocalFlatSurfaces provides flatSurfaces) {
+    CompositionLocalProvider(LocalFlatSurfaces provides dark) {
         MaterialTheme(
             colorScheme = scheme,
             typography = IrrigaTechTypography,
-            shapes = if (flatSurfaces) IrrigaTechFlatShapes else IrrigaTechShapes,
+            shapes = if (dark) IrrigaTechFlatShapes else IrrigaTechShapes,
             content = content,
         )
     }

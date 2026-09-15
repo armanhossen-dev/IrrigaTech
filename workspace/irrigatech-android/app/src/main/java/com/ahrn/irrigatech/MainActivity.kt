@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.ahrn.irrigatech.data.local.AppSettings
 import com.ahrn.irrigatech.ui.navigation.AppNavHost
-import com.ahrn.irrigatech.ui.theme.AccentGreenBlue
+import com.ahrn.irrigatech.ui.theme.AccentSteelCopper
 import com.ahrn.irrigatech.ui.theme.AccentSwatches
 import com.ahrn.irrigatech.ui.theme.IrrigaTechTheme
 
@@ -39,7 +39,7 @@ private fun IrrigaTechRoot() {
     val settings by container.settingsStore.settings.collectAsStateWithLifecycle(
         initialValue = AppSettings(),
     )
-    val accent = AccentSwatches.firstOrNull { it.id == settings.accentId } ?: AccentGreenBlue
+    val accent = AccentSwatches.firstOrNull { it.id == settings.accentId } ?: AccentSteelCopper
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission(),

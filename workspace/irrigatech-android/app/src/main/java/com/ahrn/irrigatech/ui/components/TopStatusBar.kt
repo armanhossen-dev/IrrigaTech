@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -30,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.ahrn.irrigatech.ui.theme.Spacing
 import com.ahrn.irrigatech.ui.theme.StatusColors
 
@@ -47,6 +49,8 @@ fun TopStatusBar(
     onNotificationsClick: () -> Unit,
     onProfileClick: () -> Unit,
     modifier: Modifier = Modifier,
+    userPhotoUrl: String? = null,
+    userDisplayName: String? = null,
 ) {
     Row(
         modifier = modifier
@@ -80,7 +84,11 @@ fun TopStatusBar(
             }
             NotificationBell(unreadAlerts = unreadAlerts, onClick = onNotificationsClick)
             Spacer(Spacing.sm)
-            ProfileAvatar(onClick = onProfileClick)
+            ProfileAvatar(
+                photoUrl = userPhotoUrl,
+                displayName = userDisplayName,
+                onClick = onProfileClick
+            )
         }
     }
 }
@@ -131,7 +139,7 @@ private fun PowerChip(voltage: Double?, batteryPercent: Int?) {
         )
         androidx.compose.foundation.layout.Spacer(Modifier.size(Spacing.xs))
         val label = buildString {
-            if (voltage != null) append("%.1fV".format(voltage))
+            if (voltage != null) append("%.3fV".format(voltage))
             if (voltage != null && batteryPercent != null) append(" · ")
             if (batteryPercent != null) append("$batteryPercent%")
         }
@@ -178,7 +186,11 @@ private fun NotificationBell(unreadAlerts: Int, onClick: () -> Unit) {
 }
 
 @Composable
-private fun ProfileAvatar(onClick: () -> Unit) {
+private fun ProfileAvatar(
+    photoUrl: String?,
+    displayName: String?,
+    onClick: () -> Unit
+) {
     Box(
         modifier = Modifier
             .size(40.dp)
@@ -194,11 +206,20 @@ private fun ProfileAvatar(onClick: () -> Unit) {
             .clickable(onClick = onClick),
         contentAlignment = Alignment.Center,
     ) {
-        Text(
-            text = "A",
-            style = MaterialTheme.typography.titleSmall,
-            color = Color.White,
-            fontWeight = FontWeight.Bold,
-        )
+        if (photoUrl != null) {
+            AsyncImage(
+                model = photoUrl,
+                contentDescription = "Profile picture",
+                modifier = Modifier.fillMaxSize()
+            )
+        } else {
+            val initial = displayName?.firstOrNull()?.toString()?.uppercase() ?: "A"
+            Text(
+                text = initial,
+                style = MaterialTheme.typography.titleSmall,
+                color = Color.White,
+                fontWeight = FontWeight.Bold,
+            )
+        }
     }
 }

@@ -37,6 +37,7 @@ object AppViewModelProvider {
                 deviceStore = app().container.deviceStore,
                 tokenStore = app().container.tokenStore,
                 settingsStore = app().container.settingsStore,
+                sessionStore = app().container.sessionStore,
                 alertRepository = app().container.alertRepository,
                 repository = app().container.sensorRepository,
             )

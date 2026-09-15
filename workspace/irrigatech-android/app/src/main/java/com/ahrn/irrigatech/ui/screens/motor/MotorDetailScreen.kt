@@ -30,6 +30,7 @@ import androidx.compose.material.icons.outlined.Shield
 import androidx.compose.material.icons.outlined.WaterDrop
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -152,35 +153,53 @@ fun MotorDetailScreen(
             }
 
             Column(modifier = Modifier.fillMaxWidth().padding(Spacing.xl).padding(top = 0.dp)) {
+                val isToggling = state.togglingMotor == motor
                 if (running) {
                     OutlinedButton(
-                        onClick = { viewModel.requestToggle(motor) },
+                        onClick = { viewModel.stopMotor(motor) },
+                        enabled = !isToggling,
                         shape = RoundedCornerShape(14.dp),
                         colors = ButtonDefaults.outlinedButtonColors(contentColor = StatusColors.alert),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.PowerSettingsNew,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
+                        if (isToggling) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(18.dp),
+                                strokeWidth = 2.dp,
+                                color = StatusColors.alert,
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Outlined.PowerSettingsNew,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
                         Spacer(Modifier.width(Spacing.sm))
-                        Text("Stop motor")
+                        Text(if (isToggling) "Stopping..." else "Stop motor")
                     }
                 } else {
                     Button(
                         onClick = { viewModel.requestToggle(motor) },
-                        enabled = lock == null,
+                        enabled = !isToggling,
                         shape = RoundedCornerShape(14.dp),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        Icon(
-                            imageVector = Icons.Outlined.PowerSettingsNew,
-                            contentDescription = null,
-                            modifier = Modifier.size(18.dp),
-                        )
+                        if (isToggling) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(18.dp),
+                                strokeWidth = 2.dp,
+                                color = MaterialTheme.colorScheme.onPrimary,
+                            )
+                        } else {
+                            Icon(
+                                imageVector = Icons.Outlined.PowerSettingsNew,
+                                contentDescription = null,
+                                modifier = Modifier.size(18.dp),
+                            )
+                        }
                         Spacer(Modifier.width(Spacing.sm))
-                        Text("Start motor")
+                        Text(if (isToggling) "Starting..." else "Start motor")
                     }
                 }
             }
