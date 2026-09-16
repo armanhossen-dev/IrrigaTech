@@ -554,8 +554,6 @@ private fun TeamMemberRow(
             text = description,
             style = MaterialTheme.typography.bodyMedium,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis,
         )
 
         Spacer(Modifier.height(Spacing.md))
